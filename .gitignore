@@ -10,4 +10,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vs/*
 EventsPublisher/ldt-env/*
-EventsSubscriber/ldt-env/*
+EventsSubscriber/ldt2-env/*

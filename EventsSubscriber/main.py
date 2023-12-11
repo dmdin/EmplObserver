@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from KafkaSubscriber.KafkaSubscriber import KafkaEventsConsumer
+from peewee import *
+from database import register_event
 
 load_dotenv()
 
@@ -15,6 +17,10 @@ def consume_messages():
 
         for message in consumer.consume():
             print(message)
+            if "UserName" in message and "AppName" in message:
+                register_event(message["UserName"], message["AppName"])
+            else:
+                print(f'Некорректное событие')
     except Exception as err:
         print(err)
         consume_messages()

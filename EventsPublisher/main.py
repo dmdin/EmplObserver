@@ -11,7 +11,7 @@ from Models.WindowsEventModel import WindowsEventModel
 
 username = getpass.getuser()
 
-kafkaPublisher = kafkaPublisher.kafkaEventsProducer(['localhost:9092'])
+kafkaPublisher = kafkaPublisher.kafkaEventsProducer(['178.170.196.177:9092'])
 
 def get_active_file_name():
     active_window = win32gui.GetForegroundWindow()
@@ -50,3 +50,4 @@ try:
 except Exception as err:
     print(f'Ошибка: {err}')
     time.sleep(500)
+    start_listener()
