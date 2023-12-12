@@ -18,8 +18,6 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
-    env_file:
-      - kafka.env
     ports:
       - "9092:9092"
       - "9997:9997"

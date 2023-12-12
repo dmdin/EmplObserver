@@ -6,11 +6,11 @@ class kafkaEventsProducer:
                  sasl_plain_username, 
                  sasl_plain_password):
         self.kafka_producer = KafkaProducer(
-            sasl_plain_username = sasl_plain_username,
-            sasl_plain_password = sasl_plain_password,
+            # sasl_plain_username = sasl_plain_username,
+            # sasl_plain_password = sasl_plain_password,
             bootstrap_servers = bootstrap_servers,
-            security_protocol='SASL_PLAINTEXT',
-            sasl_mechanism='PLAIN',
+            # security_protocol='SASL_PLAINTEXT',
+            # sasl_mechanism='PLAIN',
             api_version=(0, 10))
         self.count_events = 0
 
