@@ -3,10 +3,16 @@ from kafka import KafkaConsumer
 
 class KafkaEventsConsumer:
 
-    def __init__(self, topic, bootstrap_servers):
+    def __init__(self, topic, bootstrap_servers,
+            sasl_plain_username,
+            sasl_plain_password):
         self.consumer = KafkaConsumer( 
-                topic, 
-                bootstrap_servers = bootstrap_servers, 
+                topic,
+                sasl_plain_username = sasl_plain_username,
+                sasl_plain_password = sasl_plain_password,
+                bootstrap_servers = bootstrap_servers,
+                security_protocol='SASL_PLAINTEXT',
+                sasl_mechanism='PLAIN',
                 auto_offset_reset = 'earliest', 
                 enable_auto_commit = True, 
                 group_id = 'event-subscriber-group', 

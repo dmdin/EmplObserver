@@ -7,11 +7,23 @@ import win32process
 import time
 from KafkaProducer import kafkaPublisher
 from Models.WindowsEventModel import WindowsEventModel
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 username = getpass.getuser()
 
-kafkaPublisher = kafkaPublisher.kafkaEventsProducer(['178.170.196.177:9092'])
+kafkaHost = os.getenv('KAFKA_HOST')
+kafkaPort = os.getenv('KAFKA_PORT')
+kafkaUser = os.getenv('KAFKA_USERNAME')
+kafkaPassword = os.getenv('KAFKA_PASSWORD')
+
+kafkaServer = f'{kafkaHost}:{kafkaPort}'
+
+
+kafkaPublisher = kafkaPublisher.kafkaEventsProducer([kafkaServer], kafkaUser, kafkaPassword)
 
 def get_active_file_name():
     active_window = win32gui.GetForegroundWindow()

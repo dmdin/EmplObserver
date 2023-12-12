@@ -1,8 +1,17 @@
 from kafka import KafkaProducer
 
 class kafkaEventsProducer:
-    def __init__(self, bootstrap_servers,):
-        self.kafka_producer = KafkaProducer(bootstrap_servers=bootstrap_servers, api_version=(0, 10))
+    def __init__(self, 
+                 bootstrap_servers,
+                 sasl_plain_username, 
+                 sasl_plain_password):
+        self.kafka_producer = KafkaProducer(
+            sasl_plain_username = sasl_plain_username,
+            sasl_plain_password = sasl_plain_password,
+            bootstrap_servers = bootstrap_servers,
+            security_protocol='SASL_PLAINTEXT',
+            sasl_mechanism='PLAIN',
+            api_version=(0, 10))
         self.count_events = 0
 
     def publish_message(self, topic_name, key, value):

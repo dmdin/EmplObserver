@@ -11,3 +11,4 @@ vite.config.ts.timestamp-*
 .vs/*
 EventsPublisher/ldt-env/*
 EventsSubscriber/ldt2-env/*
+dockerItems/kafka.env

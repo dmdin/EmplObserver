@@ -8,12 +8,16 @@ load_dotenv()
 
 kafkaHost = os.getenv('KAFKA_HOST')
 kafkaPort = os.getenv('KAFKA_PORT')
+kafkaUser = os.getenv('KAFKA_USERNAME')
+kafkaPassword = os.getenv('KAFKA_PASSWORD')
 
 kafkaServer = f'{kafkaHost}:{kafkaPort}'
 
 def consume_messages():
     try:
-        consumer = KafkaEventsConsumer("winEvents", [kafkaServer])
+        consumer = KafkaEventsConsumer("winEvents", [kafkaServer],
+            sasl_plain_username=kafkaUser,
+            sasl_plain_password=kafkaPassword)
 
         for message in consumer.consume():
             print(message)
