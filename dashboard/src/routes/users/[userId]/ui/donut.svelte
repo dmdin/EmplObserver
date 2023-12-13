@@ -15,12 +15,15 @@
 	async function update(period: TimeInterval) {
 		loading = true;
 		const {apps, appCounts} = await rpc.EventApplication.getForUser(userId, period);
-		console.log(apps);
 
-
-		console.log(apps);
 		loading = false;
 		return {
+			title: {
+				textStyle: {
+					color: '#ffffff',
+				},
+        text: 'Используемые приложения',
+			},
 			tooltip: {
 				confine: true,
 				textStyle: {
@@ -38,15 +41,25 @@
 					saveAsImage: {}
 				}
 			},
-
+      grid: {
+      left: '10%',
+      right: '5%',
+      bottom: '10%',
+      top: '30%',
+      // borderColor: hsl2css(vars?.b2),
+    },
 			series: [
 				{
 					data: apps.map((a, i) => { return {
             name: a,
             value: appCounts[i]
           }}),
+					label: {
+						color: '#ffffff',
+
+					},
 					type: 'pie',
-          radius: ['65%', '70%'],
+          radius: ['50%', '60%'],
 				}
 			]
 		};
@@ -55,10 +68,12 @@
 	$: options = update($period);
 </script>
 
-<div class="w-[400px] h-[300px]">
+<div class="p-3 w-fit bg-backgroundSecondary rounded-md">
+<div class="w-[400px] h-[300px] grid place-items-center">
 	{#await options}
 		<div class="spinner-circle"></div>
 	{:then options}
 		<Chart {options} />
 	{/await}
+</div>
 </div>

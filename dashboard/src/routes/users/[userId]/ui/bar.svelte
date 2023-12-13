@@ -26,9 +26,18 @@
 			values.push(event.count);
 		}
 
-		console.log(events);
 		loading = false;
 		return {
+			title: {
+				textStyle: {
+					color: '#ffffff'
+				},
+				text: 'Распределение активности'
+			},
+			label: {
+				color: '#ffffff'
+			},
+
 			tooltip: {
 				confine: true,
 				textStyle: {
@@ -53,10 +62,17 @@
 			yAxis: {
 				type: 'value'
 			},
+			grid: {
+				left: '10%',
+				right: '5%',
+				bottom: '10%',
+				top: '20%'
+				// borderColor: hsl2css(vars?.b2),
+			},
 			series: [
 				{
 					data: values,
-					type: 'bar',
+					type: 'bar'
 				}
 			]
 		};
@@ -65,10 +81,12 @@
 	$: options = update($period);
 </script>
 
-<div class="w-[400px] h-[300px]">
-	{#await options}
-		<div class="spinner-circle"></div>
-	{:then options}
-		<Chart {options} />
-	{/await}
+<div class="p-3 w-fit bg-backgroundSecondary rounded-md">
+	<div class="w-[400px] h-[300px] grid place-items-center">
+		{#await options}
+			<div class="spinner-circle"></div>
+		{:then options}
+			<Chart {options} />
+		{/await}
+	</div>
 </div>
