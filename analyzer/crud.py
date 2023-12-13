@@ -97,6 +97,7 @@ def create_user_statistics(login,
             ("recipient_counts", recipient_counts(sent_messages)),
             ("bcc_count", bcc_count(sent_messages)),
             ("cc_count", cc_count(sent_messages)),
+            # TODO: X should not be constant, currently 4
             ("read_messages_later_than", read_messages_later_than(received_messages, 4)),
             ("days_between_received_and_read", days_between_received_and_read(received_messages)),
             ("replied_messages_count", replied_messages_count(account, received_messages)),
