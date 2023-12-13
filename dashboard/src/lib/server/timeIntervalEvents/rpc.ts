@@ -2,13 +2,13 @@ import {rpc} from '@chord-ts/rpc'
 import {db} from '../db' 
 import {timeIntervalEvents} from './model'
 import { and, eq, gt} from 'drizzle-orm'
-import type { TimeInterval } from '../models/TimeInverval'
+import { TimeInterval } from '$lib/enums'
 
 export class EventTimeInterval {
   @rpc()
   async getForUser(user_id: number, timeInterval: TimeInterval) {
 
-    let startDate: Date = this.getStartDateInterval(timeInterval);
+    const startDate: Date = this.getStartDateInterval(timeInterval);
 
     return await db.select()
         .from(timeIntervalEvents)
@@ -19,16 +19,16 @@ export class EventTimeInterval {
   getStartDateInterval(timeInterval: TimeInterval): Date {
     let daysToSubtract: number = 0
     switch (timeInterval) {
-        case 0:
+        case TimeInterval.Day:
           daysToSubtract = 1;
           break;
-        case 1:
+        case TimeInterval.Week:
           daysToSubtract = 7;
             break;
-        case 2:
+        case TimeInterval.Month:
           daysToSubtract = 30;
             break;
-        case 3:
+        case TimeInterval.Year:
           daysToSubtract = 365;
             break;
     }
