@@ -13,6 +13,7 @@ export class EventTimeInterval {
     return await db.select()
         .from(timeIntervalEvents)
         .where(and(eq(timeIntervalEvents.user, user_id), gt(timeIntervalEvents.intervalStart, String(startDate))))
+        .orderBy(timeIntervalEvents.intervalStart)
     
   }
 
