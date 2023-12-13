@@ -37,6 +37,9 @@ devDependencies:
   drizzle-kit:
     specifier: ^0.20.6
     version: 0.20.6
+  echarts:
+    specifier: ^5.4.3
+    version: 5.4.3
   eslint:
     specifier: ^8.28.0
     version: 8.28.0
@@ -64,6 +67,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.6.0
     version: 3.6.0(postcss@8.4.32)(svelte@4.2.7)
+  svelte-echarts:
+    specifier: ^0.1.1
+    version: 0.1.1(echarts@5.4.3)(svelte@4.2.7)
   tailwindcss:
     specifier: ^3.3.6
     version: 3.3.6
@@ -1745,6 +1751,13 @@ packages:
       postgres: 3.4.3
     dev: false
 
+  /echarts@5.4.3:
+    resolution: {integrity: sha512-mYKxLxhzy6zyTi/FaEbJMOZU1ULGEQHaeIeuMR5L+JnJTpz+YR03mnnpBhbR4+UYJAgiXgpyTVLffPAjOTLkZA==}
+    dependencies:
+      tslib: 2.3.0
+      zrender: 5.4.4
+    dev: true
+
   /electron-to-chromium@1.4.609:
     resolution: {integrity: sha512-ihiCP7PJmjoGNuLpl7TjNA8pCQWu09vGyjlPYw1Rqww4gvNuCcmvl+44G+2QyJ6S2K4o+wbTS++Xz0YN8Q9ERw==}
     dev: true
@@ -3258,6 +3271,16 @@ packages:
       - sugarss
     dev: true
 
+  /svelte-echarts@0.1.1(echarts@5.4.3)(svelte@4.2.7):
+    resolution: {integrity: sha512-kLnTPz6gmRl47Oe/Vjh6sIRBYRUUmzl8uvrdMg9wFXe1ur6L/xBo3c7e5lMBQarPRteC24+XT335P/htNyihHA==}
+    peerDependencies:
+      echarts: ^5.4.3
+      svelte: ^4.0.0
+    dependencies:
+      echarts: 5.4.3
+      svelte: 4.2.7
+    dev: true
+
   /svelte-eslint-parser@0.30.0(svelte@4.2.7):
     resolution: {integrity: sha512-H0Cn2TKr70DU9p/Gb04CfwtS7eK28MYumrHYPaDNkIFbfwGDLADpbERBn7u8G1Rcm2RMr2/mL6mq0J2e8iKFlA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -3434,6 +3457,10 @@ packages:
 
   /ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
+    dev: true
+
+  /tslib@2.3.0:
+    resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
     dev: true
 
   /tslib@2.4.1:
@@ -3687,4 +3714,10 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: true
+
+  /zrender@5.4.4:
+    resolution: {integrity: sha512-0VxCNJ7AGOMCWeHVyTrGzUgrK4asT4ml9PEkeGirAkKNYXYzoPJCLvmyfdoOXcjTHPs10OZVMfD1Rwg16AZyYw==}
+    dependencies:
+      tslib: 2.3.0
     dev: true
