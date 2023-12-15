@@ -40,7 +40,7 @@ class UserStatistic(Model):
     messagesOutsideWorkingHours = IntegerField()
     receivedToSentRatio = FloatField()
     bytesReceivedToSentRatio = FloatField()
-    messagesWithQuestionAndNoReply = IntegerField(),
+    messagesWithQuestionAndNoReply = IntegerField()
     readMessagesMoreThan4Hours = IntegerField()
     startInterval = DateField()
     endInterval = DateField()

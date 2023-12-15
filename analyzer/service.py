@@ -228,5 +228,5 @@ def run_schedule():
     while True:
         schedule.run_pending()
         time.sleep(1)
-
+check_mail_iteration()
 run_schedule()
