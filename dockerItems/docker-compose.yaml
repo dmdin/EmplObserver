@@ -63,13 +63,13 @@ services:
     networks:
       - ldt
 
-  front:
-    restart: always
-    build:
-      context: app
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
+  # front:
+  #   restart: always
+  #   build:
+  #     context: ../dashboard
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
 
   nginx:
     image: nginx
@@ -79,9 +79,9 @@ services:
       - 443:443
     restart: always
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../certbot/conf:/etc/letsencrypt
+      - ../certbot/www:/var/www/certbot
 
   events-db:
     image: postgres:14.1-alpine
@@ -97,6 +97,14 @@ services:
       - 5433:5432
     networks:
       - ldt
+
+  certbot:
+    image: certbot/certbot:latest
+    #docker-compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d domain_name -
+    #docker-compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ -d domain_name
+    volumes:
+      - "../certbot/conf:/etc/letsencrypt"
+      - "../certbot/www:/var/www/certbot"
 
 networks:
   ldt:
