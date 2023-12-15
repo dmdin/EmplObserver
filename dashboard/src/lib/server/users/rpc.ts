@@ -1,12 +1,32 @@
 import {rpc} from '@chord-ts/rpc'
 import {db} from '../db' 
 import {updateUserModel, userUpdateMessage, users} from './model'
-import { eq, or } from 'drizzle-orm'
+import { eq, or, sql } from 'drizzle-orm'
+import { userStatistic } from '../userStatistics/model'
 
 export class User {
   @rpc()
   async getAll() {
-    return db.select().from(users)
+    return db.select({
+      userId: users.id,
+      domainName: users.domainName,
+      domainEmail: users.domainEmail,
+      sendMessagesCount: sql<number>`avg(${userStatistic.sendMessagesCount})`,
+      receivedMessagesCount:  sql<number>`avg(${userStatistic.receivedMessagesCount})`,
+      recipientCounts: sql<number>`avg(${userStatistic.recipientCounts})`,
+      bccCount: sql<number>`avg(${userStatistic.bccCount})`,
+      ccCount: sql<number>`avg(${userStatistic.ccCount})`,
+      //daysBetweenReceivedAndRead: ArrayField(integer),
+      repliedMessagesCount: sql<number>`avg(${userStatistic.repliedMessagesCount})`,
+      sentCharactersCount: sql<number>`avg(${userStatistic.sentCharactersCount})`,
+      messagesOutsideWorkingHours: sql<number>`avg(${userStatistic.messagesOutsideWorkingHours})`,
+      receivedToSentRatio: sql<number>`avg(${userStatistic.receivedToSentRatio})`,
+      bytesReceivedToSentRatio: sql<number>`avg(${userStatistic.bytesReceivedToSentRatio})`,
+      messagesWithQuestionAndNoReply: sql<number>`avg(${userStatistic.messagesWithQuestionAndNoReply})`,
+      readMessagesMoreThan4Hours: sql<number>`avg(${userStatistic.readMessagesMoreThan4Hours})`,
+    }).from(users)
+    .leftJoin(userStatistic, eq(users.id, userStatistic.user))
+    .groupBy(users.id)
   }
 
   @rpc()
