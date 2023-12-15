@@ -17,10 +17,9 @@ export class UserStatistics {
     
   }
 
-  async getCsv(user_id: num)
-
   getStartDateInterval(timeInterval: TimeInterval): Date {
-    let daysToSubtract: number = 365
+    let daysToSubtract: number = 0
+
     switch (timeInterval) {
         case TimeInterval.Day:
           daysToSubtract = 1;
