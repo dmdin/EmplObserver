@@ -13,4 +13,5 @@ EventsPublisher/ldt-env/*
 EventsSubscriber/ldt-env/*
 dockerItems/events-db.env
 EventsSubscriber/ldt2-env/*
+analyzer/analyzer-env/*
 dockerItems/kafka.env

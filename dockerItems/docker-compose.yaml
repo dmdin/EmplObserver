@@ -10,7 +10,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      -  ldt
+      - ldt
 
   kafka:
     image: confluentinc/cp-server:7.2.1
@@ -35,7 +35,7 @@ services:
       KAFKA_JMX_PORT: 9997
       KAFKA_JMX_HOSTNAME: kafka
     networks:
-      -  ldt
+      - ldt
 
   kafka-ui:
     container_name: kafka-ui
@@ -45,7 +45,7 @@ services:
     environment:
       DYNAMIC_CONFIG_ENABLED: "true"
     networks:
-      -  ldt
+      - ldt
 
   events-subscriber:
     restart: always
@@ -53,7 +53,15 @@ services:
       context: ../EventsSubscriber
       dockerfile: Dockerfile
     networks:
-      -  ldt
+      - ldt
+
+  analyzer:
+    restart: always
+    build:
+      context: ../analyzer
+      dockerfile: Dockerfile
+    networks:
+      - ldt
 
   events-db:
     image: postgres:14.1-alpine
@@ -68,7 +76,7 @@ services:
     ports:
       - 5433:5432
     networks:
-      -  ldt
+      - ldt
 
 networks:
   ldt:

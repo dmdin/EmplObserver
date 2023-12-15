@@ -16,12 +16,12 @@ database = PostgresqlDatabase(postgresDb, user=postgresUser, password=postgresPa
 class User(Model):
     id = AutoField()
     domainName = CharField(max_length=100)
-
+    domainEmail = CharField(max_length=100)
+    password = CharField(max_length=100)
+    
     class Meta:
         database = database
 
-
-User.create_table()
 
 
 class App(Model):

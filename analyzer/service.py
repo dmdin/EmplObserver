@@ -1,15 +1,32 @@
 import datetime
 import time
 from functools import wraps
-
 from exchangelib import Credentials, Account, EWSDateTime, EWSTimeZone, Q
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 import requests
 import re
+from database import UserStatistic, User
+import datetime
+import schedule
+
 requests.packages.urllib3.disable_warnings()
 
 BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
 tz = EWSTimeZone('UTC')
+from database import get_users
+
+def check_mail_iteration():
+    try:
+        for user in get_users():
+            try:
+                calculate_user_statistics(user)
+            except Exception as ex:
+                print(f"Ошибка рассчета статистик для сотрудника: {user.domainEmail}. {ex}")
+    except Exception as ex:
+        print(ex)
+
+
+
 
 def timing_decorator(func):
     @wraps(func)
@@ -143,30 +160,73 @@ def messages_with_question_and_no_reply(account, messages):
 
     return count
 
+def get_start_date():
+    now = datetime.datetime.now()
+    now -= datetime.timedelta(days=7)
 
-if __name__ == '__main__':
-    # Аутентификация и подключение к учетной записи Outlook
-    email, password = "galimovdv@outlook.com", "MRC-qCm-6ec-FKN"
-    credentials = Credentials(email, password)
-    account = Account(primary_smtp_address=email, credentials=credentials, autodiscover=True, access_type='delegate')
+    return EWSDateTime(now.year, now.month, now.day, tzinfo=tz)
 
-    # Получение диапазона дат и сообщений с указанием часового пояса
-    start_date = EWSDateTime(2021, 1, 1, tzinfo=tz)
-    end_date = EWSDateTime(2025, 12, 31, tzinfo=tz)
-    sent_messages = list(filter(lambda v: v is not None, account.sent.filter(datetime_received__range=(start_date, end_date))))
-    received_messages = list(filter(lambda v: v is not None, account.inbox.filter(datetime_received__range=(start_date, end_date))))
+def get_end_date():
+    now = datetime.datetime.now()
 
-    # Примеры вызовов функций
-    print("sent_messages_count", sent_messages_count(account, start_date, end_date))
-    print("received_messages_count", received_messages_count(account, start_date, end_date))
-    print("recipient_counts", recipient_counts(sent_messages))
-    print("bcc_count", bcc_count(sent_messages))
-    print("cc_count", cc_count(sent_messages))
-    print("read_messages_later_than", read_messages_later_than(received_messages, 4))
-    print("days_between_received_and_read", days_between_received_and_read(received_messages))
-    print("replied_messages_count", replied_messages_count(account, received_messages))
-    print("sent_characters_count", sent_characters_count(sent_messages))
-    print("messages_outside_working_hours", messages_outside_working_hours(sent_messages))
-    print("received_to_sent_ratio", received_to_sent_ratio(len(received_messages), len(sent_messages)))
-    print("bytes_received_to_sent_ratio", bytes_received_to_sent_ratio(received_messages, sent_messages))
-    print("messages_with_question_and_no_reply", messages_with_question_and_no_reply(account, received_messages))
+    return EWSDateTime(now.year, now.month, now.day, tzinfo=tz)
+
+
+def calculate_user_statistics(user: User):
+
+    start_date = get_start_date()
+    end_date = get_end_date()
+
+    for i in range(10):
+        # Аутентификация и подключение к учетной записи Outlook
+        credentials = Credentials(user.domainEmail, user.password)
+        account = Account(primary_smtp_address=user.domainEmail, credentials=credentials, autodiscover=True, access_type='delegate')
+
+
+        sent_messages = list(filter(lambda v: v is not None, account.sent.filter(datetime_received__range=(start_date, end_date))))
+        received_messages = list(filter(lambda v: v is not None, account.inbox.filter(datetime_received__range=(start_date, end_date))))
+
+        # Примеры вызовов функций
+        sent_messages_count_val =  sent_messages_count(account, start_date, end_date)
+        received_messages_count_val =  received_messages_count(account, start_date, end_date)
+        recipient_counts_val = recipient_counts(sent_messages)
+        bcc_count_val = bcc_count(sent_messages)
+        cc_count_val =  cc_count(sent_messages)
+        read_messages_later_than_val = read_messages_later_than(received_messages, 4)
+        days_between_received_and_read_val = days_between_received_and_read(received_messages)
+        replied_messages_count_val = replied_messages_count(account, received_messages)
+        sent_characters_count_val = sent_characters_count(sent_messages)
+        messages_outside_working_hours_val = messages_outside_working_hours(sent_messages)
+        received_to_sent_ratio_val = received_to_sent_ratio(len(received_messages), len(sent_messages))
+        bytes_received_to_sent_ratio_val = bytes_received_to_sent_ratio(received_messages, sent_messages)
+        messages_with_question_and_no_reply_val = messages_with_question_and_no_reply(account, received_messages)
+
+        statistic = UserStatistic(
+            user = user,
+            sendMessagesCount = sent_messages_count_val,
+            receivedMessagesCount =  received_messages_count_val,
+            recipientCounts = recipient_counts_val,
+            bccCount = bcc_count_val,
+            ccCount = cc_count_val,
+            daysBetweenReceivedAndRead = days_between_received_and_read_val,
+            repliedMessagesCount = replied_messages_count_val,
+            sentCharactersCount = sent_characters_count_val,
+            messagesOutsideWorkingHours = messages_outside_working_hours_val,
+            receivedToSentRatio = received_to_sent_ratio_val,
+            bytesReceivedToSentRatio = bytes_received_to_sent_ratio_val,
+            messagesWithQuestionAndNoReply = messages_with_question_and_no_reply_val,
+            readMessagesMoreThan4Hours = read_messages_later_than_val,
+            startInterval = start_date - datetime.timedelta(days=7*i),
+            endInterval = end_date- datetime.timedelta(days=7*i),
+        )
+
+        statistic.save()
+    
+
+def run_schedule():
+    schedule.every(7).days.do(check_mail_iteration)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+run_schedule()

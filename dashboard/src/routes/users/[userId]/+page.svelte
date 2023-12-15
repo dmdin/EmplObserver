@@ -17,7 +17,7 @@
 <div class="w-full flex items-center justify-between mb-10">
 	<h2 class="font-black text-2xl">Сотрудник: {user?.domainName}</h2>
 	<div class="flex items-center gap-2 font-bold">
-    <h3>Выбор периода:</h3>
+		<h3>Выбор периода:</h3>
 		<select bind:value={$period} class="select w-[100px]">
 			{#each Object.entries(TimeInterval) as [k, v]}
 				<option value={v}>

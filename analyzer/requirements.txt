@@ -1,3 +1,5 @@
 sqlalchemy<2.0
 exchangelib
-SQLAlchemy
+python-dotenv==1.0.0
+peewee==3.17.0
+schedule==1.2.1
