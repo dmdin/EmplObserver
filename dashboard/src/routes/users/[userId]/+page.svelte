@@ -87,6 +87,6 @@
 			<Bar class="w-full" />
 			<Bar class="w-full" />
 		</div>
-		<Donut class="h-[608px] w-2/6" />
+		<Donut class="h-[608px] w-full" />
 	</div>
 {/if}
