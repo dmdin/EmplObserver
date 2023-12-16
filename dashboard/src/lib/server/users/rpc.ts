@@ -1,32 +1,49 @@
-import {rpc} from '@chord-ts/rpc'
+import {rpc, depends} from '@chord-ts/rpc'
 import {db} from '../db' 
 import {updateUserModel, userUpdateMessage, users} from './model'
 import { eq, or, sql } from 'drizzle-orm'
 import { userStatistic } from '../userStatistics/model'
+import { managers } from '../managers/model'
 
 export class User {
+  @depends()
+  ctx: { session:{user:{email: string}}} | undefined
+  
   @rpc()
   async getAll() {
-    return db.select({
-      userId: users.id,
-      domainName: users.domainName,
-      domainEmail: users.domainEmail,
-      sendMessagesCount: sql<number>`avg(${userStatistic.sendMessagesCount})`,
-      receivedMessagesCount:  sql<number>`avg(${userStatistic.receivedMessagesCount})`,
-      recipientCounts: sql<number>`avg(${userStatistic.recipientCounts})`,
-      bccCount: sql<number>`avg(${userStatistic.bccCount})`,
-      ccCount: sql<number>`avg(${userStatistic.ccCount})`,
-      //daysBetweenReceivedAndRead: ArrayField(integer),
-      repliedMessagesCount: sql<number>`avg(${userStatistic.repliedMessagesCount})`,
-      sentCharactersCount: sql<number>`avg(${userStatistic.sentCharactersCount})`,
-      messagesOutsideWorkingHours: sql<number>`avg(${userStatistic.messagesOutsideWorkingHours})`,
-      receivedToSentRatio: sql<number>`avg(${userStatistic.receivedToSentRatio})`,
-      bytesReceivedToSentRatio: sql<number>`avg(${userStatistic.bytesReceivedToSentRatio})`,
-      messagesWithQuestionAndNoReply: sql<number>`avg(${userStatistic.messagesWithQuestionAndNoReply})`,
-      readMessagesMoreThan4Hours: sql<number>`avg(${userStatistic.readMessagesMoreThan4Hours})`,
-    }).from(users)
-    .leftJoin(userStatistic, eq(users.id, userStatistic.user))
-    .groupBy(users.id)
+    
+    let email: string = this.ctx?.session?.user?.email ?? "komlevdanila742@gmail.com";
+
+    let manager = await this.getManagerByEmail(email);
+
+    if(manager == undefined){
+      return []
+    }
+    else{
+      return db.select({
+        userId: users.id,
+        domainName: users.domainName,
+        domainEmail: users.domainEmail,
+        sendMessagesCount: sql<number>`avg(${userStatistic.sendMessagesCount})`,
+        receivedMessagesCount:  sql<number>`avg(${userStatistic.receivedMessagesCount})`,
+        recipientCounts: sql<number>`avg(${userStatistic.recipientCounts})`,
+        bccCount: sql<number>`avg(${userStatistic.bccCount})`,
+        ccCount: sql<number>`avg(${userStatistic.ccCount})`,
+        //daysBetweenReceivedAndRead: ArrayField(integer),
+        repliedMessagesCount: sql<number>`avg(${userStatistic.repliedMessagesCount})`,
+        sentCharactersCount: sql<number>`avg(${userStatistic.sentCharactersCount})`,
+        messagesOutsideWorkingHours: sql<number>`avg(${userStatistic.messagesOutsideWorkingHours})`,
+        receivedToSentRatio: sql<number>`avg(${userStatistic.receivedToSentRatio})`,
+        bytesReceivedToSentRatio: sql<number>`avg(${userStatistic.bytesReceivedToSentRatio})`,
+        messagesWithQuestionAndNoReply: sql<number>`avg(${userStatistic.messagesWithQuestionAndNoReply})`,
+        readMessagesMoreThan4Hours: sql<number>`avg(${userStatistic.readMessagesMoreThan4Hours})`,
+      }).from(users)
+      .leftJoin(userStatistic, eq(users.id, userStatistic.user))
+      .where(eq(users.managerId, manager.id))
+      .groupBy(users.id)
+    }
+
+    
   }
 
   @rpc()
@@ -125,5 +142,15 @@ export class User {
     response.message = "Пользователь успешно удален"
 
     return response;
+  }
+
+  async getManagerByEmail(email: string){
+    let manager = await db.select().from(managers).limit(1);
+
+    if(manager.length == 0){
+      return undefined;
+    }
+
+    return manager[0];
   }
 }

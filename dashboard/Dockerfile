@@ -31,4 +31,4 @@ RUN sed -i 's/node:x:1000:1000/node:x:1001:1001/g' /etc/passwd && \
 
 RUN npx prisma generate
 EXPOSE 3000
-CMD ["node", "./index.js"]
+CMD ["node", "/app/build/index.js"]

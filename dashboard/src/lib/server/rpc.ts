@@ -5,12 +5,14 @@ import {User} from '$lib/server/users/rpc'
 import { EventApplication } from './eventApplications/rpc'
 import { EventTimeInterval } from './timeIntervalEvents/rpc'
 import { UserStatistics } from './userStatistics/rpc'
+import { Managers } from './managers/rpc'
 // Import other rpc models
 export const composer = new Composer({
   User: new User(),
   EventApplication: new EventApplication(),
   EventTimeInterval: new EventTimeInterval(),
-  UserStatistics: new UserStatistics()
+  UserStatistics: new UserStatistics(),
+  Managers: new Managers()
 })
 
 composer.use(sveltekitMiddleware())
