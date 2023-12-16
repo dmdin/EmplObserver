@@ -10,9 +10,9 @@
 	});
 </script>
 
-<div id="theme-root" data-theme={$theme} class="w-full h-screen">
+<div id="theme-root" data-theme={$theme} class="w-full h-fit bg-backgroundPrimary">
   <Nav/>
-	<main class="w-full p-2 flex- flex-col max-w-5xl m-auto pt-[50px]">
+	<main class="w-full p-2 flex- flex-col max-w-5xl m-auto py-[50px] ">
 		<slot />
 	</main>
 </div>

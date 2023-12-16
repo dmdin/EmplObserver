@@ -73,7 +73,7 @@
 	$: options = update($period, $colors);
 </script>
 
-<div class="p-3 bg-backgroundSecondary rounded-md {$$props.class}">
+<div class="p-3 bg-backgroundSecondary rounded-md {$$props.class} shadow-md">
 	<div class="min-h-[272px] h-full w-full grid place-items-center">
 		{#await options}
 			<div class="spinner-circle"></div>
