@@ -11,10 +11,8 @@ export class User {
   
   @rpc()
   async getAll() {
-    
-    let email: string = this.ctx?.session?.user?.email ?? "komlevdanila742@gmail.com";
 
-    let manager = await this.getManagerByEmail(email);
+    let manager = await this.getManagerByEmail(await this.getUserEmail());
 
     if(manager == undefined){
       return []
@@ -73,7 +71,15 @@ export class User {
       return response;
     }
 
-    let insertResult = await db.insert(users).values(user).returning({ insertedId: users.id });
+    let manager = await this.getManagerByEmail(await this.getUserEmail());
+
+    if(manager == undefined){
+      response.message = "Неавторизированные пользователи не могу создавать сотрудников";
+      response.success = false;
+      return response;
+    }
+    
+    let insertResult = await db.insert(users).values({...user, managerId: manager.id}).returning({ insertedId: users.id });
 
     response.message = "Пользователь успешно добавлен"
     response.userId = insertResult[0].insertedId;
@@ -142,6 +148,10 @@ export class User {
     response.message = "Пользователь успешно удален"
 
     return response;
+  }
+
+  async getUserEmail(){
+    return  this.ctx?.session?.user?.email ?? "";
   }
 
   async getManagerByEmail(email: string){
