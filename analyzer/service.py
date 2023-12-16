@@ -8,6 +8,8 @@ import re
 from database import UserStatistic, User
 import datetime
 import schedule
+import csv
+from file_manager import send_week_stats
 
 requests.packages.urllib3.disable_warnings()
 
@@ -24,16 +26,31 @@ def check_mail_iteration():
                 stats = calculate_user_statistics(user)
 
                 if user.manager in manager_user_stats:
-                    manager_user_stats.append(stats)
+                    manager_user_stats[user.manager].append(stats)
                 else:
-                    manager_user_stats = [stats]
-                print(manager_user_stats)
+                    manager_user_stats[user.manager] = [stats]
+                break
             except Exception as ex:
                 print(f"Ошибка рассчета статистик для сотрудника: {user.domainEmail}. {ex}")
+
+        send_report(manager_user_stats)
     except Exception as ex:
         print(ex)
 
 
+def send_report(manager_user_stats):
+    for manager in manager_user_stats:
+        csv_file_path = 'temp.csv'
+
+        with open(csv_file_path, 'w', newline='') as file:
+            fieldnames = ["Пользователь", "Вероятность увольнения"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for user in manager.users:
+                writer.writerow({"Пользователь":user.domainEmail, "Вероятность увольнения": 0.5 })
+
+        send_week_stats(manager.domainEmail)
 
 
 def timing_decorator(func):
