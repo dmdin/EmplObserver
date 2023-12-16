@@ -5,9 +5,12 @@ from exchangelib import Credentials, Account, EWSDateTime, EWSTimeZone, Q
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 import requests
 import re
+from transformers import pipeline
 from database import UserStatistic, User
 import datetime
 import schedule
+import csv
+from file_manager import send_week_stats
 
 requests.packages.urllib3.disable_warnings()
 
@@ -24,16 +27,31 @@ def check_mail_iteration():
                 stats = calculate_user_statistics(user)
 
                 if user.manager in manager_user_stats:
-                    manager_user_stats.append(stats)
+                    manager_user_stats[user.manager].append(stats)
                 else:
-                    manager_user_stats = [stats]
-                print(manager_user_stats)
+                    manager_user_stats[user.manager] = [stats]
+                break
             except Exception as ex:
                 print(f"Ошибка рассчета статистик для сотрудника: {user.domainEmail}. {ex}")
+
+        send_report(manager_user_stats)
     except Exception as ex:
         print(ex)
 
 
+def send_report(manager_user_stats):
+    for manager in manager_user_stats:
+        csv_file_path = 'temp.csv'
+
+        with open(csv_file_path, 'w', newline='') as file:
+            fieldnames = ["Пользователь", "Вероятность увольнения"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for user in manager.users:
+                writer.writerow({"Пользователь":user.domainEmail, "Вероятность увольнения": 0.5 })
+
+        send_week_stats(manager.domainEmail)
 
 
 def timing_decorator(func):
@@ -179,6 +197,33 @@ def get_end_date():
 
     return EWSDateTime(now.year, now.month, now.day, tzinfo=tz)
 
+def get_predictions():
+    clf = pipeline(
+        task='sentiment-analysis',
+        model='SkolkovoInstitute/russian_toxicity_classifier')
+    messages = get_sent_messages()
+    return list(zip(messages, clf(messages)))
+
+
+def get_sent_messages(account,
+                      start_date=EWSDateTime(2021, 1, 1, tzinfo=tz),
+                      end_date=EWSDateTime(2025, 12, 31, tzinfo=tz)):
+    # Получение списка отправленных сообщений за период
+    sent_folder = account.sent
+    q = Q(datetime_received__range=(start_date, end_date))
+    messages = list(sent_folder.filter(q))
+    m = messages[0]
+    messages = [msg.text_body.split('________________________________')[0].strip() for msg in messages]
+    return [''.join(c if c.isprintable() else ' ' for c in msg) for msg in messages]
+
+def get_negative_messages_percent(account,
+                                  start_date=EWSDateTime(2021, 1, 1, tzinfo=tz),
+                                  end_date=EWSDateTime(2025, 12, 31, tzinfo=tz)):
+    results = get_sent_messages(
+        account,
+        start_date,
+        end_date)
+    return sum(1 for i in results if i['label'] == 'toxic')/len(results)
 
 def calculate_user_statistics(user: User):
 
@@ -225,8 +270,9 @@ def calculate_user_statistics(user: User):
         readMessagesMoreThan4Hours = read_messages_later_than_val,
         startInterval = start_date,
         endInterval = end_date,
+            toxic_messages_percent = get_negative_messages_percent(account, start_date, end_date)
     )
-        
+
 
    # statistic.save()
 

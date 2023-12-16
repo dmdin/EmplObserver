@@ -20,9 +20,8 @@ def send_week_stats(manager_email):
         print('Авторизация успешна!')
 
         # Отправка письма с вложением
-        subject = 'Эженедельная отправка информации о вовлеченности сотрудников'
+        subject = 'Еженедельная отправка информации о вовлеченности сотрудников'
         body = 'Добрый день!\nВо вложении файл с информацией об активности сотрудников Вашего подразделения с прогнозом вероятности их увольнения.\nЭто автоматическое письмо, не нужно на него отвечать'
-        attachment_path = '.gitignore'
 
         message = Message(
             account=account,
@@ -31,17 +30,15 @@ def send_week_stats(manager_email):
             body=body,
             to_recipients=['komlevdanila742@gmail.com']
         )
-
-        with open(attachment_path, 'rb') as f:
-            attachment = FileAttachment(name=attachment_path.split('/')[-1], content=f.read())
+            
+        with open("temp.csv", 'rb') as f:
+            attachment = FileAttachment(name="results.csv", content=f.read())
             message.attach(attachment)
-
         message.send_and_save()
+
         print('Сообщение с вложением отправлено.')
 
     except ErrorNonExistentMailbox:
         print('Почтовый ящик не существует или неправильный логин / пароль')
     except ErrorInvalidServerVersion:
         print('Указан неправильный сервер или версия сервера')
-
-send_week_stats("1")

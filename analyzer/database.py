@@ -16,7 +16,7 @@ database = PostgresqlDatabase(postgresDb, user=postgresUser, password=postgresPa
 
 class Manager(Model):
     id = AutoField()
-    domainEmail = CharField(max_length=100)
+    domainEmail = CharField(max_length=100, db_column="domainemail",)
 
     class Meta:
         database = database
@@ -28,7 +28,7 @@ class User(Model):
     domainName = CharField(max_length=100)
     domainEmail = CharField(max_length=100)
     password = CharField(max_length=100)
-    manager = ForeignKeyField(Manager, backref='users')
+    manager = ForeignKeyField(Manager, db_column="managerid", backref='users')
     
     class Meta:
         database = database
@@ -54,6 +54,7 @@ class UserStatistic(Model):
     readMessagesMoreThan4Hours = IntegerField()
     startInterval = DateField()
     endInterval = DateField()
+    toxic_messages_percent = FloatField()
 
     class Meta:
         database = database

@@ -8,8 +8,8 @@ def get_predictions():
     clf = pipeline(
         task='sentiment-analysis',
         model='SkolkovoInstitute/russian_toxicity_classifier')
-
-    return clf(get_sent_messages())
+    messages = get_sent_messages()
+    return list(zip(messages, clf(messages)))
 
 
 def get_sent_messages(account=
