@@ -8,4 +8,4 @@ RUN pip install -r /code/requirements.txt
 
 COPY . /code
 
-CMD ["python", "main.py"]
+CMD ["python", "service.py"]

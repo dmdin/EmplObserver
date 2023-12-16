@@ -14,8 +14,8 @@ COPY . .
 
 # FROM base AS build
 # RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm install
-RUN pnpm run build
+RUN npm install
+RUN npm run build
 
 
 # FROM base
