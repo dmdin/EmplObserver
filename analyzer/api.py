@@ -1,12 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, Form
 import uvicorn
-from pydantic import BaseModel
 from datetime import date
 import io
 import csv
 from model import UserStatisticItem
-from ml_model import predict
-import ast
+#from ml_model import predict
 
 app = FastAPI()
 
@@ -64,15 +62,15 @@ def parse_rows(reader):
             recipient_counts=int(r[2]),
             bcc_count=int(r[3]),
             cc_count=int(r[4]), 
-            # days_between_received_and_read= [int(x) for x in ast.literal_eval(r[5])],
-            replied_messages_count=int(r[5]),
-            sent_characters_count=int(r[6]), 
-            messages_outside_working_hours=int(r[7]), 
-            received_to_sent_ratio=float(r[8]),
-            bytesReceivedToSentRatio=float(r[9]),
-            messages_with_question_and_no_reply=int(r[10]),
-            read_messages_later_than=int(r[11]),
-            count_events=int(r[12]))
+            days_between_received_and_read= int(r[5]),
+            replied_messages_count=int(r[6]),
+            sent_characters_count=int(r[7]),
+            messages_outside_working_hours=int(r[8]),
+            received_to_sent_ratio=float(r[9]),
+            bytesReceivedToSentRatio=float(r[10]),
+            messages_with_question_and_no_reply=int(r[11]),
+            read_messages_later_than=int(r[12]),
+            count_events=int(r[13]))
         
             rows.append(row)
         except Exception as ex:
@@ -81,8 +79,7 @@ def parse_rows(reader):
 
     return rows
 
-    
+
 
 def run_fastapi():
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)

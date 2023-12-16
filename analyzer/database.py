@@ -44,7 +44,7 @@ class UserStatistic(Model):
     recipientCounts = IntegerField()
     bccCount = IntegerField()
     ccCount = IntegerField()
-    daysBetweenReceivedAndRead = ArrayField(IntegerField)
+    daysBetweenReceivedAndRead = IntegerField
     repliedMessagesCount = IntegerField()
     sentCharactersCount = IntegerField()
     messagesOutsideWorkingHours = IntegerField()

@@ -71,7 +71,7 @@ def timing_decorator(func):
 @timing_decorator
 def sent_messages_count(account,
                         start_date = EWSDateTime(2021, 1, 1, tzinfo=tz),
-                        end_date = EWSDateTime(2025, 12, 31, tzinfo=tz)):
+                        end_date = EWSDateTime(2025, 12, 31, tzinfo=tz)) -> int:
     # 1. Количество отправленных сообщений за период
     sent_folder = account.sent
     q = Q(datetime_received__range=(start_date, end_date))
@@ -81,7 +81,7 @@ def sent_messages_count(account,
 @timing_decorator
 def received_messages_count(account,
                             start_date = EWSDateTime(2021, 1, 1, tzinfo=tz),
-                            end_date = EWSDateTime(2025, 12, 31, tzinfo=tz)):
+                            end_date = EWSDateTime(2025, 12, 31, tzinfo=tz)) -> int:
     # 2. Количество получаемых сообщений за период
     inbox_folder = account.inbox
     q = Q(datetime_received__range=(start_date, end_date))
@@ -89,26 +89,26 @@ def received_messages_count(account,
 
 
 @timing_decorator
-def recipient_counts(messages):
+def recipient_counts(messages) -> int:
     # 3. Количество адресатов в отправляемых сообщениях
     count = sum(len(msg.to_recipients) for msg in messages)
     return count
 
 
 @timing_decorator
-def bcc_count(messages):
+def bcc_count(messages) -> int:
     # 4. Количество сообщений с адресатами в поле «скрытая копия»
     return sum(1 for msg in messages if msg.bcc_recipients)
 
 
 @timing_decorator
-def cc_count(messages):
+def cc_count(messages) -> int:
     # 5. Количество сообщений с адресатами в поле «копия»
     return sum(1 for msg in messages if msg.cc_recipients)
 
 
 @timing_decorator
-def read_messages_later_than(messages, hours):
+def read_messages_later_than(messages, hours) -> int:
     # 6. Количество сообщений, прочитанных позднее времени
     # получения на Х часов. Принять Х как параметр настройки с
     # начальным значением 4 часа
@@ -119,24 +119,24 @@ def read_messages_later_than(messages, hours):
     return count
 
 @timing_decorator
-def days_between_received_and_read(messages):
+def days_between_received_and_read(messages) -> int:
     # 7. Количество дней между датой получения и датой прочтения сообщения
     days_diff = []
     for msg in messages:
         if msg.is_read:
             days_diff.append((msg.last_modified_time - msg.datetime_received).days)
-    return days_diff
+    return max(days_diff)
 
 
 @timing_decorator
-def replied_messages_count(account, received_messages):
+def replied_messages_count(account, received_messages) -> int:
     # 8. Количество сообщений, на которые произведен ответ
     replied_msg_ids = set(account.sent.all())
     return sum(1 for msg in received_messages if msg.message_id in replied_msg_ids)
 
 
 @timing_decorator
-def sent_characters_count(messages):
+def sent_characters_count(messages) -> int:
     # 9. Количество символов текста в исходящих сообщениях
     messages = [msg.text_body.split('________________________________')[0].strip() for msg in messages]
 
@@ -144,7 +144,7 @@ def sent_characters_count(messages):
 
 
 @timing_decorator
-def messages_outside_working_hours(messages, working_hours=(9, 18)):
+def messages_outside_working_hours(messages, working_hours=(9, 18)) -> int:
     # 10. Количество сообщений, отправленных вне рамок рабочего дня
     count = 0
     for msg in messages:
@@ -154,13 +154,13 @@ def messages_outside_working_hours(messages, working_hours=(9, 18)):
 
 
 @timing_decorator
-def received_to_sent_ratio(received_count, sent_count):
+def received_to_sent_ratio(received_count, sent_count) -> float:
     # 11. Соотношение количества полученных и отправленных сообщений
     return received_count / max(1, sent_count)
 
 
 @timing_decorator
-def bytes_received_to_sent_ratio(received_messages, sent_messages):
+def bytes_received_to_sent_ratio(received_messages, sent_messages) -> float:
     # 12. Соотношение объема в байтах получаемых и отправляемых сообщений
     received_messages = [''.join(c for c in msg.text_body if c.isprintable()) for msg in received_messages]
     received_bytes = sum(len(msg.encode('utf-8')) for msg in received_messages)
@@ -170,7 +170,7 @@ def bytes_received_to_sent_ratio(received_messages, sent_messages):
     return received_bytes / max(1, sent_bytes)
 
 @timing_decorator
-def messages_with_question_and_no_reply(account, messages):
+def messages_with_question_and_no_reply(account, messages) -> int:
     # 13. Количество входящих сообщений, имеющих вопросительные
     # знаки в тексте (исключая ссылки), но на которые не был направлен ответ
     count = 0
@@ -280,7 +280,7 @@ def calculate_user_statistics(user: User):
    # statistic.save()
 
     return statistic
-    
+
 
 def run_schedule():
     schedule.every(7).days.do(check_mail_iteration)
