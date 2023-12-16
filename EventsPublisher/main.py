@@ -39,7 +39,7 @@ def on_mouse_click(_,__,___, pressed):
     try:
         if pressed:
             kafkaPublisher.publish_message("winEvents", "event", 
-                        WindowsEventModel(UserName="komda222", AppName=get_active_file_name()).json())
+                        WindowsEventModel(UserName=username, AppName=get_active_file_name()).json())
     except Exception as err:
         print(f"Error: {err}")
 
