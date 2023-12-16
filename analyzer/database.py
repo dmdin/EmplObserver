@@ -44,6 +44,7 @@ class UserStatistic(Model):
     readMessagesMoreThan4Hours = IntegerField()
     startInterval = DateField()
     endInterval = DateField()
+    toxic_messages_percent = FloatField()
 
     class Meta:
         database = database
