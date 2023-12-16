@@ -4,7 +4,7 @@
 	import { Chart, type EChartsOptions } from 'svelte-echarts';
 
 	import { page } from '$app/stores';
-	import { rpc } from '$lib/client';
+	import { rpc, colors } from '$lib/client';
 	import type { TimeInterval } from '$lib/enums';
 	import { period } from '../controller';
 
@@ -12,17 +12,17 @@
 
 	let loading = true;
 
-	async function update(period: TimeInterval) {
+	async function update(period: TimeInterval, $colors) {
 		loading = true;
-		const {apps, appCounts} = await rpc.EventApplication.getForUser(userId, period);
+		const { apps, appCounts } = await rpc.EventApplication.getForUser(userId, period);
 
 		loading = false;
 		return {
 			title: {
 				textStyle: {
-					color: '#ffffff',
+					color: $colors?.c1
 				},
-        text: 'Используемые приложения',
+				text: 'Используемые приложения'
 			},
 			tooltip: {
 				confine: true,
@@ -41,39 +41,40 @@
 					saveAsImage: {}
 				}
 			},
-      grid: {
-      left: '10%',
-      right: '5%',
-      bottom: '10%',
-      top: '30%',
-      // borderColor: hsl2css(vars?.b2),
-    },
+			grid: {
+				left: '10%',
+				right: '5%',
+				bottom: '10%',
+				top: '30%'
+				// borderColor: hsl2css(vars?.b2),
+			},
 			series: [
 				{
-					data: apps.map((a, i) => { return {
-            name: a,
-            value: appCounts[i]
-          }}),
+					data: apps.map((a, i) => {
+						return {
+							name: a,
+							value: appCounts[i]
+						};
+					}),
 					label: {
-						color: '#ffffff',
-
+						color: $colors?.c1
 					},
 					type: 'pie',
-          radius: ['50%', '60%'],
+					radius: ['50%', '60%']
 				}
 			]
 		};
 	}
 
-	$: options = update($period);
+	$: options = update($period, $colors);
 </script>
 
-<div class="p-3 w-fit bg-backgroundSecondary rounded-md">
-<div class="w-[400px] h-[300px] grid place-items-center">
-	{#await options}
-		<div class="spinner-circle"></div>
-	{:then options}
-		<Chart {options} />
-	{/await}
-</div>
+<div class="p-3 bg-backgroundSecondary rounded-md {$$props.class}">
+	<div class="min-h-[272px] h-full w-full grid place-items-center">
+		{#await options}
+			<div class="spinner-circle"></div>
+		{:then options}
+			<Chart {options} />
+		{/await}
+	</div>
 </div>
