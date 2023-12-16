@@ -14,11 +14,21 @@ postgresPort = os.getenv('POSTGRES_POST')
 
 database = PostgresqlDatabase(postgresDb, user=postgresUser, password=postgresPassword, host=postgresHost, port=postgresPort)
 
+class Manager(Model):
+    id = AutoField()
+    domainEmail = CharField(max_length=100)
+
+    class Meta:
+        database = database
+    
+Manager.create_table()
+
 class User(Model):
     id = AutoField()
     domainName = CharField(max_length=100)
     domainEmail = CharField(max_length=100)
     password = CharField(max_length=100)
+    manager = ForeignKeyField(Manager, backref='users')
     
     class Meta:
         database = database
