@@ -3,3 +3,4 @@ exchangelib
 python-dotenv==1.0.0
 peewee==3.17.0
 schedule==1.2.1
+psycopg2==2.9.9

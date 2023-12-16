@@ -17,10 +17,18 @@ tz = EWSTimeZone('UTC')
 from database import get_users
 
 def check_mail_iteration():
+    manager_user_stats = {}
+
     try:
         for user in get_users():
             try:
-                calculate_user_statistics(user)
+                stats = calculate_user_statistics(user)
+
+                if user.manager in manager_user_stats:
+                    manager_user_stats.append(stats)
+                else:
+                    manager_user_stats = [stats]
+                print(manager_user_stats)
             except Exception as ex:
                 print(f"Ошибка рассчета статистик для сотрудника: {user.domainEmail}. {ex}")
     except Exception as ex:
@@ -205,51 +213,53 @@ def calculate_user_statistics(user: User):
     start_date = get_start_date()
     end_date = get_end_date()
 
-    for i in range(10):
-        # Аутентификация и подключение к учетной записи Outlook
-        credentials = Credentials(user.domainEmail, user.password)
-        account = Account(primary_smtp_address=user.domainEmail, credentials=credentials, autodiscover=True, access_type='delegate')
+    # Аутентификация и подключение к учетной записи Outlook
+    credentials = Credentials(user.domainEmail, user.password)
+    account = Account(primary_smtp_address=user.domainEmail, credentials=credentials, autodiscover=True, access_type='delegate')
 
 
-        sent_messages = list(filter(lambda v: v is not None, account.sent.filter(datetime_received__range=(start_date, end_date))))
-        received_messages = list(filter(lambda v: v is not None, account.inbox.filter(datetime_received__range=(start_date, end_date))))
+    sent_messages = list(filter(lambda v: v is not None, account.sent.filter(datetime_received__range=(start_date, end_date))))
+    received_messages = list(filter(lambda v: v is not None, account.inbox.filter(datetime_received__range=(start_date, end_date))))
 
-        # Примеры вызовов функций
-        sent_messages_count_val =  sent_messages_count(account, start_date, end_date)
-        received_messages_count_val =  received_messages_count(account, start_date, end_date)
-        recipient_counts_val = recipient_counts(sent_messages)
-        bcc_count_val = bcc_count(sent_messages)
-        cc_count_val =  cc_count(sent_messages)
-        read_messages_later_than_val = read_messages_later_than(received_messages, 4)
-        days_between_received_and_read_val = days_between_received_and_read(received_messages)
-        replied_messages_count_val = replied_messages_count(account, received_messages)
-        sent_characters_count_val = sent_characters_count(sent_messages)
-        messages_outside_working_hours_val = messages_outside_working_hours(sent_messages)
-        received_to_sent_ratio_val = received_to_sent_ratio(len(received_messages), len(sent_messages))
-        bytes_received_to_sent_ratio_val = bytes_received_to_sent_ratio(received_messages, sent_messages)
-        messages_with_question_and_no_reply_val = messages_with_question_and_no_reply(account, received_messages)
+    # Примеры вызовов функций
+    sent_messages_count_val =  sent_messages_count(account, start_date, end_date)
+    received_messages_count_val =  received_messages_count(account, start_date, end_date)
+    recipient_counts_val = recipient_counts(sent_messages)
+    bcc_count_val = bcc_count(sent_messages)
+    cc_count_val =  cc_count(sent_messages)
+    read_messages_later_than_val = read_messages_later_than(received_messages, 4)
+    days_between_received_and_read_val = days_between_received_and_read(received_messages)
+    replied_messages_count_val = replied_messages_count(account, received_messages)
+    sent_characters_count_val = sent_characters_count(sent_messages)
+    messages_outside_working_hours_val = messages_outside_working_hours(sent_messages)
+    received_to_sent_ratio_val = received_to_sent_ratio(len(received_messages), len(sent_messages))
+    bytes_received_to_sent_ratio_val = bytes_received_to_sent_ratio(received_messages, sent_messages)
+    messages_with_question_and_no_reply_val = messages_with_question_and_no_reply(account, received_messages)
 
-        statistic = UserStatistic(
-            user = user,
-            sendMessagesCount = sent_messages_count_val,
-            receivedMessagesCount =  received_messages_count_val,
-            recipientCounts = recipient_counts_val,
-            bccCount = bcc_count_val,
-            ccCount = cc_count_val,
-            daysBetweenReceivedAndRead = days_between_received_and_read_val,
-            repliedMessagesCount = replied_messages_count_val,
-            sentCharactersCount = sent_characters_count_val,
-            messagesOutsideWorkingHours = messages_outside_working_hours_val,
-            receivedToSentRatio = received_to_sent_ratio_val,
-            bytesReceivedToSentRatio = bytes_received_to_sent_ratio_val,
-            messagesWithQuestionAndNoReply = messages_with_question_and_no_reply_val,
-            readMessagesMoreThan4Hours = read_messages_later_than_val,
-            startInterval = start_date - datetime.timedelta(days=7*i),
-            endInterval = end_date- datetime.timedelta(days=7*i),
+    statistic = UserStatistic(
+        user = user,
+        sendMessagesCount = sent_messages_count_val,
+        receivedMessagesCount =  received_messages_count_val,
+        recipientCounts = recipient_counts_val,
+        bccCount = bcc_count_val,
+        ccCount = cc_count_val,
+        daysBetweenReceivedAndRead = days_between_received_and_read_val,
+        repliedMessagesCount = replied_messages_count_val,
+        sentCharactersCount = sent_characters_count_val,
+        messagesOutsideWorkingHours = messages_outside_working_hours_val,
+        receivedToSentRatio = received_to_sent_ratio_val,
+        bytesReceivedToSentRatio = bytes_received_to_sent_ratio_val,
+        messagesWithQuestionAndNoReply = messages_with_question_and_no_reply_val,
+        readMessagesMoreThan4Hours = read_messages_later_than_val,
+        startInterval = start_date,
+        endInterval = end_date,
             toxic_messages_percent = get_negative_messages_percent(account, start_date, end_date)
-        )
+    )
 
-        statistic.save()
+
+   # statistic.save()
+
+    return statistic
     
 
 def run_schedule():

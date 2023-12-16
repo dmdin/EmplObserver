@@ -1,52 +1,47 @@
 from exchangelib import Account, FileAttachment, Message, Configuration, Credentials
 from exchangelib.errors import ErrorNonExistentMailbox, ErrorInvalidServerVersion
 from exchangelib.protocol import BaseProtocol
+import os
+from dotenv import load_dotenv
 
-# Установите автоматическое обнаружение сервера Outlook (если нужно)
+load_dotenv()
+
+serviceEmail = os.getenv('SERVICE_EMAIL')
+servicePassword = os.getenv('SERVICE_PASSWORD')
+serviceServer = os.getenv('SERVICE_SERVER')
+
+
 BaseProtocol.HTTP_ADAPTER_CLS.allow_redirects = False
 
-email, password = "galimovdv@outlook.com", "MRC-qCm-6ec-FKN"
-server = 'outlook.office365.com'  # или другой сервер по вашему усмотрению
+def send_week_stats(manager_email): 
+    try:
+        config = Configuration(server=serviceServer, credentials=Credentials(serviceEmail, servicePassword))
+        account = Account(primary_smtp_address=serviceEmail, config=config, autodiscover=False, access_type='delegate')
+        print('Авторизация успешна!')
 
-try:
-    config = Configuration(server=server, credentials=Credentials(email, password))
-    account = Account(primary_smtp_address=email, config=config, autodiscover=False, access_type='delegate')
-    print('Авторизация успешна!')
+        # Отправка письма с вложением
+        subject = 'Эженедельная отправка информации о вовлеченности сотрудников'
+        body = 'Добрый день!\nВо вложении файл с информацией об активности сотрудников Вашего подразделения с прогнозом вероятности их увольнения.\nЭто автоматическое письмо, не нужно на него отвечать'
+        attachment_path = '.gitignore'
 
-    # Отправка письма с вложением
-    subject = 'Subject of email'
-    body = 'Body of email'
-    attachment_path = '.gitignore'
+        message = Message(
+            account=account,
+            folder=account.sent,
+            subject=subject,
+            body=body,
+            to_recipients=['komlevdanila742@gmail.com']
+        )
 
-    message = Message(
-        account=account,
-        folder=account.sent,
-        subject=subject,
-        body=body,
-        to_recipients=['galimovdv@yandex.ru']
-    )
+        with open(attachment_path, 'rb') as f:
+            attachment = FileAttachment(name=attachment_path.split('/')[-1], content=f.read())
+            message.attach(attachment)
 
-    with open(attachment_path, 'rb') as f:
-        attachment = FileAttachment(name=attachment_path.split('/')[-1], content=f.read())
-        message.attach(attachment)
+        message.send_and_save()
+        print('Сообщение с вложением отправлено.')
 
-    message.send_and_save()
-    print('Сообщение с вложением отправлено.')
+    except ErrorNonExistentMailbox:
+        print('Почтовый ящик не существует или неправильный логин / пароль')
+    except ErrorInvalidServerVersion:
+        print('Указан неправильный сервер или версия сервера')
 
-    # Скачивание вложений входящего письма
-    folder = account.inbox
-
-    for item in folder.all().order_by('-datetime_received')[:10]:  # выберите количество писем для скачивания вложений
-        print(f"Скачиваем вложения из письма '{item.subject}' от {item.sender}")
-
-        for attachment in item.attachments:
-            if isinstance(attachment, FileAttachment):
-                local_path = f'attachments/{attachment.name}'
-                with open(local_path, 'wb') as f:
-                    f.write(attachment.content)
-                print(f'Скачали вложение "{attachment.name}" и сохранили в  "saved_attachments".')
-
-except ErrorNonExistentMailbox:
-    print('Почтовый ящик не существует или неправильный логин / пароль')
-except ErrorInvalidServerVersion:
-    print('Указан неправильный сервер или версия сервера')
+send_week_stats("1")
