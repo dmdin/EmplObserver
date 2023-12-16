@@ -5,6 +5,7 @@ from exchangelib import Credentials, Account, EWSDateTime, EWSTimeZone, Q
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 import requests
 import re
+from transformers import pipeline
 from database import UserStatistic, User
 import datetime
 import schedule
@@ -196,6 +197,33 @@ def get_end_date():
 
     return EWSDateTime(now.year, now.month, now.day, tzinfo=tz)
 
+def get_predictions():
+    clf = pipeline(
+        task='sentiment-analysis',
+        model='SkolkovoInstitute/russian_toxicity_classifier')
+    messages = get_sent_messages()
+    return list(zip(messages, clf(messages)))
+
+
+def get_sent_messages(account,
+                      start_date=EWSDateTime(2021, 1, 1, tzinfo=tz),
+                      end_date=EWSDateTime(2025, 12, 31, tzinfo=tz)):
+    # Получение списка отправленных сообщений за период
+    sent_folder = account.sent
+    q = Q(datetime_received__range=(start_date, end_date))
+    messages = list(sent_folder.filter(q))
+    m = messages[0]
+    messages = [msg.text_body.split('________________________________')[0].strip() for msg in messages]
+    return [''.join(c if c.isprintable() else ' ' for c in msg) for msg in messages]
+
+def get_negative_messages_percent(account,
+                                  start_date=EWSDateTime(2021, 1, 1, tzinfo=tz),
+                                  end_date=EWSDateTime(2025, 12, 31, tzinfo=tz)):
+    results = get_sent_messages(
+        account,
+        start_date,
+        end_date)
+    return sum(1 for i in results if i['label'] == 'toxic')/len(results)
 
 def calculate_user_statistics(user: User):
 
@@ -242,8 +270,9 @@ def calculate_user_statistics(user: User):
         readMessagesMoreThan4Hours = read_messages_later_than_val,
         startInterval = start_date,
         endInterval = end_date,
+            toxic_messages_percent = get_negative_messages_percent(account, start_date, end_date)
     )
-        
+
 
    # statistic.save()
 
