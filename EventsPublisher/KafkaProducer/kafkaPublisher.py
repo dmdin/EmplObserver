@@ -18,12 +18,9 @@ class kafkaEventsProducer:
         try:
             key_bytes = bytes(key, encoding='utf-8')
             value_bytes = bytes(value, encoding='utf-8')
-            print(len(key_bytes))
-            print(len(value_bytes))
             self.kafka_producer.send(topic_name, key=key_bytes, value=value_bytes)
             self.kafka_producer.flush()
                  
             self.count_events+=1
-            print(f'Message published successfully: {self.count_events}')
         except Exception as ex:
             print(str(ex))

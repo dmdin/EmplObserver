@@ -17,3 +17,4 @@ analyzer/analyzer-env/*
 dockerItems/kafka.env
 certbot/conf/
 temp.csv
+dockerItems/kafka-credentials/user-credentials.properties

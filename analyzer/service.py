@@ -11,6 +11,8 @@ import datetime
 import schedule
 import csv
 from file_manager import send_week_stats
+from api import run_fastapi
+from ml_model import predict
 
 requests.packages.urllib3.disable_warnings()
 
@@ -284,5 +286,10 @@ def run_schedule():
     while True:
         schedule.run_pending()
         time.sleep(1)
-check_mail_iteration()
-run_schedule()
+
+
+if __name__ == "__main__":
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        executor.submit(run_fastapi)
+        executor.submit(run_schedule)
+
