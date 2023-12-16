@@ -7,7 +7,7 @@ class UserStatisticItem:
     recipient_counts: int
     bcc_count: int 
     cc_count: int 
-    # days_between_received_and_read: []
+    days_between_received_and_read: int
     replied_messages_count: int 
     sent_characters_count: int 
     messages_outside_working_hours: int 
