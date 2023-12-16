@@ -18,10 +18,12 @@ export const colors = derived([theme], ([$theme], set) => {
     const style = getComputedStyle(element)
     const bp = toRGB(style.getPropertyValue('--backgroundPrimary'))
     const c1 = toRGB(style.getPropertyValue('--content1'))
+    const s = toRGB(style.getPropertyValue('--secondary'))
 
     set({
       bp,
-      c1
+      c1,
+      s
     })
   }, 100) 
 }) 
