@@ -12,69 +12,78 @@
 	let loading = true;
 
 	async function update(period: TimeInterval, $colors) {
-		loading = true;
-		const events = await rpc.EventTimeInterval.getForUser(userId, period);
+	loading = true;
+	const events = await rpc.EventTimeInterval.getForUser(userId, period);
 
-		const time = [];
-		const values = [];
+	const time = [];
+	const values = [];
 
-		for (const event of events) {
-			// dayjs(event.intervalEnd).fo)
-			time.push(dayjs(event.intervalEnd).format('HH:mm'));
-			values.push(event.count);
-		}
-
-		loading = false;
-		return {
-			title: {
-				textStyle: {
-					color: $colors?.c1
-				},
-				text: 'Распределение активности'
-			},
-			label: {
-				color: $colors?.c1
-			},
-
-			tooltip: {
-				confine: true,
-				textStyle: {
-					fontFamily: 'SBSans',
-					fontWeight: 'normal',
-					fontSize: 12
-				},
-				trigger: 'axis',
-				axisPointer: {
-					type: 'cross'
-				}
-			},
-			toolbox: {
-				feature: {
-					saveAsImage: {}
-				}
-			},
-			xAxis: {
-				data: time,
-				type: 'category'
-			},
-			yAxis: {
-				type: 'value'
-			},
-			grid: {
-				left: '10%',
-				right: '5%',
-				bottom: '10%',
-				top: '20%'
-				// borderColor: hsl2css(vars?.b2),
-			},
-			series: [
-				{
-					data: values,
-					type: 'bar'
-				}
-			]
-		};
+	for (const event of events) {
+		time.push(dayjs(event.intervalEnd).format('HH:mm'));
+		values.push({
+		value: event.count,
+		itemStyle: {
+			borderRadius: [20, 20, 20, 20],
+			backgroundColor: 'rgba(128, 128, 128, 0.3)', // Change the color here
+		},
+		});
 	}
+
+	loading = false;
+	return {
+		title: {
+		textStyle: {
+			color: $colors?.c1,
+		},
+		text: 'Распределение активности',
+		},
+		label: {
+		color: $colors?.c1,
+		},
+
+		tooltip: {
+		confine: true,
+		textStyle: {
+			fontFamily: 'SBSans',
+			fontWeight: 'normal',
+			fontSize: 12,
+		},
+		trigger: 'axis',
+		axisPointer: {
+			type: 'cross',
+		},
+		},
+		toolbox: {
+		feature: {
+			saveAsImage: {},
+		},
+		},
+		xAxis: {
+		data: time,
+		type: 'category',
+		},
+		yAxis: {
+		type: 'value',
+		},
+		grid: {
+		left: '10%',
+		right: '5%',
+		bottom: '10%',
+		top: '20%',
+
+		// borderColor: hsl2css(vars?.b2),
+		},
+
+		series: [
+		{
+			data: values,
+			type: 'bar',
+      		showBackground: true,
+		},
+		],
+	};
+	}
+
 
 	$: options = update($period, $colors);
 </script>
