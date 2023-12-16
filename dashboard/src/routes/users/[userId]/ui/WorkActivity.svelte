@@ -2,9 +2,8 @@
 	import { onMount } from 'svelte';
 	import dayjs from 'dayjs';
 	import { Chart, type EChartsOptions } from 'svelte-echarts';
-
 	import { page } from '$app/stores';
-	import { rpc } from '$lib/client';
+	import { rpc, colors } from '$lib/client';
 	import type { TimeInterval } from '$lib/enums';
 	import { period } from '../controller';
 
@@ -12,10 +11,9 @@
 
 	let loading = true;
 
-	async function update(period: TimeInterval) {
+	async function update(period: TimeInterval, $colors) {
 		loading = true;
 		const events = await rpc.EventTimeInterval.getForUser(userId, period);
-		console.log(events);
 
 		const time = [];
 		const values = [];
@@ -30,12 +28,12 @@
 		return {
 			title: {
 				textStyle: {
-					color: '#ffffff'
+					color: $colors?.c1
 				},
 				text: 'Распределение активности'
 			},
 			label: {
-				color: '#ffffff'
+				color: $colors?.c1
 			},
 
 			tooltip: {
@@ -78,11 +76,11 @@
 		};
 	}
 
-	$: options = update($period);
+	$: options = update($period, $colors);
 </script>
 
-<div class="p-3 w-fit bg-backgroundSecondary rounded-md">
-	<div class="w-[400px] h-[300px] grid place-items-center">
+<div class="p-3 w-fit bg-backgroundSecondary rounded-md {$$props.class}">
+	<div class="min-h-[272px] h-full w-full grid place-items-center">
 		{#await options}
 			<div class="spinner-circle"></div>
 		{:then options}
