@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 @dataclass()
 class UserStatisticItem:
@@ -7,7 +7,7 @@ class UserStatisticItem:
     recipient_counts: int
     bcc_count: int 
     cc_count: int 
-    days_between_received_and_read: []
+    # days_between_received_and_read: []
     replied_messages_count: int 
     sent_characters_count: int 
     messages_outside_working_hours: int 
@@ -16,3 +16,6 @@ class UserStatisticItem:
     messages_with_question_and_no_reply: int
     read_messages_later_than: int
     count_events: int
+
+    def dict(self):
+        return {k: v for k, v in asdict(self).items()}

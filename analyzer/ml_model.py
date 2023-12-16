@@ -132,14 +132,25 @@ def predict_by_max(model, scaled_worker, type_up):
     proba = 0
     for k in type_up:
         x = torch.tensor(scaled_worker[k]).unsqueeze(0).unsqueeze(2).float()
+        print(x.shape)
         pred = model(x).item()
         if not type_up[k]:
             pred = 1 - pred
         proba += pred
     return 1 - proba  / len(type_up)    
 
+def to_worker_format(form):
+    res = {}
+    for k in form[0].dict():
+        res[k] = []
+    for row in form:
+        row_d = row.dict()
+        for k in row_d:
+            res[k].append(row_d[k])
+    return pd.DataFrame(res)
+
     
-def predict():
+def predict(worker):
     model_path = "lstm_v1.11.pth"
     
     input_dim = 1    
@@ -159,7 +170,7 @@ def predict():
                 "bcc_count": 10, 
                 "cc_count": 10, 
                 "read_messages_later_than": 10, 
-                "days_between_received_and_read":5, 
+                # "days_between_received_and_read":5, 
                 "replied_messages_count": 10, 
                 "sent_characters_count": 5400, 
                 "messages_outside_working_hours": 10, 
@@ -172,18 +183,16 @@ def predict():
                 "bcc_count": 1, 
                 "cc_count": 1, 
                 "read_messages_later_than": 0, 
-                "days_between_received_and_read":0, 
+                # "days_between_received_and_read":0, 
                 "replied_messages_count": 1, 
                 "sent_characters_count": 1, 
                 "messages_outside_working_hours": 0, 
                 #"received_to_sent_ratio": 1, 
                 "messages_with_question_and_no_reply": 0}
     
-    # Генерируем случайного воркера. hw = количество часов, c - количество часовых окон hw для исторических данных
-    # Возвращает датафрейм для 80 часов = 40 часов исторических + 40 часов рассматриваемых
-    worker = pd.DataFrame(gen_worker_df(hw=40, c=11, max_range=max_range))
     
     # Делаем предскзазание
-    scaled_worker = scale_by_max(worker, max_range)
-    print(f"Proba is: {predict_by_max(model, scaled_worker, type_up)}")
+    scaled_worker = scale_by_max(to_worker_format(worker), max_range)
+    
+    return predict_by_max(model, scaled_worker, type_up)
     
