@@ -10,7 +10,6 @@
 	});
 
 	let collapse = false;
-	console.log($manager);
 </script>
 
 <nav
@@ -19,7 +18,8 @@
 	class="
     z-50
     duration-500
-    fixed left-0 top-0 bottom-0 bg-backgroundSecondary flex flex-col box-content w-[24px] justify-between my-auto rounded-md py-[37px] px-[33px] shadow-xl transition-all max-h-[600px]
+    rounded-[10px]
+    fixed left-0 top-0 bottom-0 bg-backgroundSecondary flex flex-col box-content w-[24px] justify-between my-auto py-[37px] px-[33px] shadow-xl transition-all max-h-[600px]
     hover:max-h-full hover:w-[160px]
   "
 >
