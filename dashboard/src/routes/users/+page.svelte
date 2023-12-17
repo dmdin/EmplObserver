@@ -23,19 +23,19 @@
 		<div class="flex item-center justify-center text-2xl gap-7">
 			<h2 class="font-black whitespace-nowrap">Дашборд направления</h2>
 			<span class="text-xl flex items-center text-content3 truncate"
-				>{$manager?.departmentName}</span
+				>{$manager?.departmentName ?? 'Информационные технологии'}</span
 			>
 		</div>
 	</div>
 
 	<div class="overflow-auto bg-backgroundSecondary p-3 border border-border rounded-md">
-		<table class="table-hover table ">
+		<table class="table-hover table">
 			<thead>
 				<tr>
 					<th>№</th>
 					<th>
 						<span class="flex items-center !border-0 gap-2">
-							<Icon icon="material-symbols:percent" class="!border-0" />Вероятность <br> увольнения
+							<Icon icon="material-symbols:percent" class="!border-0" />Вероятность <br /> увольнения
 						</span>
 					</th>
 					<th
@@ -49,16 +49,16 @@
 						>
 					</th>
 
-					<th>Отправленные<br>письма</th>
-					<th>Полученные<br>письма</th>
-					<th>Уникальные<br>получатели</th>
-					<th>Адресаты<br>(копия)</th>
-					<th>Адресаты<br>(скрытая копия)</th>
-					<th>Число дней<br>(прочтение)</th>
+					<th>Отправленные<br />письма (в среднем)</th>
+					<th>Полученные<br />письма</th>
+					<th>Уникальные<br />получатели</th>
+					<th>Адресаты<br />(копия)</th>
+					<th>Адресаты<br />(скрытая копия)</th>
+					<th>Число дней<br />(прочтение)</th>
 
-					<th>Письма вне<br>раб. время</th>
-					<th>Поздно прч.<br>письма</th>
-					<th>% полученных<br>к отправленным</th>
+					<th>Письма вне<br />раб. время</th>
+					<th>Поздно прч.<br />письма</th>
+					<th>% полученных<br />к отправленным</th>
 					<th>Ответы</th>
 				</tr>
 			</thead>

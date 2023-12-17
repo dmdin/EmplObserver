@@ -14,7 +14,6 @@
 	import Badge from '$lib/ui/Badge.svelte';
 	import LeaveBar from './ui/LeaveProbability.svelte';
 
-
 	function getUser(userId: string, users: Users) {
 		return $users.find((u) => u.userId === Number(userId));
 	}
@@ -41,7 +40,7 @@
 	let sumHours: number, mostUsed: { name: string; value: number }, sumClicks: number;
 	$: ({ sumHours, sumClicks, mostUsed } = calcStats($events, $appsInfo));
 
-	$: console.log(user)
+	$: console.log(user);
 </script>
 
 {#if user}
@@ -87,7 +86,7 @@
 			label="Получено писем всего: {round(user.receivedMessagesCount, 2)}"
 		/>
 		<Badge
-			title="Отправленные письма"
+			title="Отправленные письма (в среднем за неделю)"
 			value={round(user.sendMessagesCount, 2)}
 			measure="шт."
 			icon="mdi:bell-cancel"

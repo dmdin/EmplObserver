@@ -27,6 +27,8 @@
 			method: 'POST'
 		}).then((r) => r.json()));
 
+		result = 0;
+		date = undefined;
 		console.log(valid, message, min_date, max_date);
 		console.log(stats);
 		setTimeout(() => {
@@ -64,6 +66,13 @@
 
 <div class="w-full flex items-center justify-between mb-5">
 	<h1 class="font-black whitespace-nowrap">Дашборд c ручной выгрузкой</h1>
+</div>
+<div class="w-full flex items-center justify-between mb-5">
+	<p>
+		Здесь вы можете загрузить файл с активностью сотрудника, разбить его на два интервала, которые <br
+		/>
+		хотите сравнить и получить вероятность его увольнения, а также полезные статистики по файлу.
+	</p>
 </div>
 <div class="w-full flex items-center justify-between mb-5">
 	<div class="flex item-center justify-center text-2xl gap-7">
@@ -121,7 +130,16 @@
 		</div>
 	</div>
 {/if}
-
+{#if result}
+	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
+		<h1 class="font-bold text-3xl">Вероятность увольнения:</h1>
+		<Percent class="text-7xl font-black" value={result} />
+	</div>
+{:else if stats}
+	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
+		<h4 class="font-bold text-3xl">Выберите дату разбиения на интервалы, чтобы получить прогноз</h4>
+	</div>
+{/if}
 <!-- {/if} -->
 {#if stats}
 	<div class="w-full flex justify-between flex-wrap">
@@ -143,7 +161,7 @@
 		/>
 		<Badge
 			title="Получено сообщений"
-			value="{round(stats.avg_messages_received_per_week, 2)}%"
+			value={round(stats.avg_messages_received_per_week, 2)}
 			class="!text-[20px]"
 			measure=""
 			label="(в среднем за неделю)"
@@ -165,16 +183,5 @@
 			label="сообщений во внерабочее время"
 			icon="ph:align-top-fill"
 		/>
-	</div>
-{/if}
-
-{#if result}
-	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
-		<h1 class="font-bold text-3xl">Вероятность увольнения:</h1>
-		<Percent class="text-7xl font-black" value={result} />
-	</div>
-{:else if stats}
-	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
-		<h1 class="font-bold text-3xl">Выберите дату разбиения на интервалы</h1>
 	</div>
 {/if}
