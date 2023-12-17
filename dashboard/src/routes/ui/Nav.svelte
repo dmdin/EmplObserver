@@ -7,6 +7,8 @@
 
 	onMount(async () => {
 		$theme = 'light';
+
+		collapse = false;
 	});
 
 	let collapse = false;

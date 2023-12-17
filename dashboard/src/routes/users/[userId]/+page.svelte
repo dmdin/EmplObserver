@@ -14,6 +14,7 @@
 	import Badge from './ui/Badge.svelte';
 	import LeaveBar from './ui/LeaveProbability.svelte';
 
+
 	function getUser(userId: string, users: Users) {
 		return $users.find((u) => u.userId === Number(userId));
 	}
