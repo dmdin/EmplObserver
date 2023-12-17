@@ -41,7 +41,7 @@
       },
       trigger: 'item',
 	  formatter: function(params) { 
-		return " " + params.value + " (" + ((params.value / appCountsSum)*100).toFixed(2) + "%)";  
+		return " " + params.value + " (" + ((params.value / appCountsSum)*100).toFixed(2) + "%) - " + sortedApps[params.dataIndex];  
 	} 
     },
     toolbox: {

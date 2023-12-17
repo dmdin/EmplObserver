@@ -4,6 +4,7 @@ import {updateUserModel, userUpdateMessage, users} from './model'
 import { eq, or, sql } from 'drizzle-orm'
 import { userStatistic } from '../userStatistics/model'
 import { managers } from '../managers/model'
+import { integer } from 'drizzle-orm/pg-core'
 
 export class User {
   @depends()
@@ -27,7 +28,7 @@ export class User {
         recipientCounts: sql<number>`avg(${userStatistic.recipientCounts})`,
         bccCount: sql<number>`avg(${userStatistic.bccCount})`,
         ccCount: sql<number>`avg(${userStatistic.ccCount})`,
-        //daysBetweenReceivedAndRead: ArrayField(integer),
+        daysBetweenReceivedAndRead: sql<number>`avg(${userStatistic.daysBetweenReceivedAndRead})`,
         repliedMessagesCount: sql<number>`avg(${userStatistic.repliedMessagesCount})`,
         sentCharactersCount: sql<number>`avg(${userStatistic.sentCharactersCount})`,
         messagesOutsideWorkingHours: sql<number>`avg(${userStatistic.messagesOutsideWorkingHours})`,
