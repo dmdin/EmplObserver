@@ -51,7 +51,7 @@ git clone https://github.com/dmdin/EmplObserver.git
 Перейти в папку с docker-compose:
 
 ```powershell
-cd whoosh_LDT/dockerItems
+cd EmplObserver/dockerItems
 ```
 
 Запустить сервисы:
