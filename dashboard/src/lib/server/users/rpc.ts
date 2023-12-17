@@ -80,7 +80,7 @@ export class User {
       domainEmail: users.domainEmail,
       dismissalProbability: userStatistic.dismissalProbability
     }).from(userStatistic)
-    .leftJoin(users, eq(users.id, user_id))
+    .leftJoin(users, eq(userStatistic.user, user_id))
     .where(and(eq(user_id, users.id), gt(userStatistic.startInterval, String(startDate))))
   }
 
