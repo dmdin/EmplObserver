@@ -18,6 +18,7 @@ export const userStatistic = pgTable('userstatistic',
     bytesReceivedToSentRatio: numeric('bytesReceivedToSentRatio'),
     messagesWithQuestionAndNoReply: numeric('messagesWithQuestionAndNoReply'),
     readMessagesMoreThan4Hours: numeric('readMessagesMoreThan4Hours'),
+    dismissalProbability: numeric('dismissalprobability'),
     startInterval: date('startInterval'),
     endInterval: date('endInterval')
 })

@@ -35,6 +35,7 @@ export class User {
         bytesReceivedToSentRatio: sql<number>`avg(${userStatistic.bytesReceivedToSentRatio})`,
         messagesWithQuestionAndNoReply: sql<number>`avg(${userStatistic.messagesWithQuestionAndNoReply})`,
         readMessagesMoreThan4Hours: sql<number>`avg(${userStatistic.readMessagesMoreThan4Hours})`,
+        dismissalProbability: sql<number>`avg(${userStatistic.dismissalProbability})`
       }).from(users)
       .leftJoin(userStatistic, eq(users.id, userStatistic.user))
       .where(eq(users.managerId, manager.id))

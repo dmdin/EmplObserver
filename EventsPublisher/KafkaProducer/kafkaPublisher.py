@@ -20,7 +20,7 @@ class kafkaEventsProducer:
             value_bytes = bytes(value, encoding='utf-8')
             self.kafka_producer.send(topic_name, key=key_bytes, value=value_bytes)
             self.kafka_producer.flush()
-                 
+            print(self.count_events)
             self.count_events+=1
         except Exception as ex:
             print(str(ex))
