@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import Icon from '@iconify/svelte';
 
-	import { rpc, users, type Users } from '$lib/client';
+	import { rpc, users, round, type Users } from '$lib/client';
 	import { page } from '$app/stores';
 	import { TimeInterval } from '$lib/enums';
 
@@ -20,22 +20,26 @@
 
 	function calcStats(events: Events, appsInfo: AppsInfo) {
 		let mostUsed = { name: 'Отсутствует', value: 0 };
-		let sumHours = 0
+		let sumHours = 0;
+		let sumClicks = 0;
 
-		if (!events) return { sumHours, mostUsed };
+		if (!events) return { sumHours, mostUsed, sumClicks };
 		sumHours = events.filter((v) => v.count! > 100).length / 2;
+		sumClicks = events.reduce((p, c) => (p += c.count!), 0);
 
-		if (!appsInfo) return { sumHours, mostUsed };
+		if (!appsInfo) return { sumHours, mostUsed, sumClicks };
 		for (const [i, v] of Object.entries(appsInfo.appCounts)) {
 			if (mostUsed.value < v) {
 				mostUsed = { name: appsInfo.apps[Number(i)]!, value: v };
 			}
 		}
-		return { sumHours, mostUsed };
+		return { sumHours, mostUsed, sumClicks };
 	}
 
-	let sumHours: number, mostUsed: {name: string, value: number};
-	$: ({ sumHours, mostUsed } = calcStats($events, $appsInfo));
+	let sumHours: number, mostUsed: { name: string; value: number }, sumClicks: number;
+	$: ({ sumHours, sumClicks, mostUsed } = calcStats($events, $appsInfo));
+
+	$: console.log(user)
 </script>
 
 {#if user}
@@ -58,28 +62,34 @@
 		</div>
 	</div>
 	<div class="flex justify-between w-full my-8">
-		<Badge title="Проработанные часы" value={sumHours} measure="часов" icon="mdi:clock" />
+		<Badge
+			title="Часы работы"
+			value={sumHours}
+			measure="часов"
+			icon="mdi:clock"
+			label="Всего: {sumClicks} кликов"
+		/>
 		<Badge
 			title="Популярное приложение"
 			value={mostUsed.name}
 			class="!text-[20px]"
 			measure=""
-			label="{mostUsed.value} кликов"
+			label="{mostUsed.value} кликов в приложении"
 			icon="ph:align-top-fill"
 		/>
 		<Badge
-			title="Средняя активность"
-			value="2"
-			measure="часа в день"
+			title="Поздно прочитанные письма"
+			value={round(user.readMessagesMoreThan4Hours, 2)}
+			measure="шт."
 			icon="tabler:activity"
-			label="Количество часов возросло"
+			label="Получено писем всего: {round(user.receivedMessagesCount, 2)}"
 		/>
 		<Badge
-			title="Вероятность увольнения"
-			value="100%"
-			measure=""
+			title="Отправленные письма"
+			value={round(user.sendMessagesCount, 2)}
+			measure="шт."
 			icon="mdi:bell-cancel"
-			label="Не эффективный сотрудник"
+			label="Всего ответов: {round(user.repliedMessagesCount)}"
 		/>
 	</div>
 	<div class="w-full flex mt-3 items-center justify-between gap-4 [608px]">
