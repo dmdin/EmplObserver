@@ -127,8 +127,8 @@ async def upload_file(file: UploadFile = File(...), date_diff: date= Form(...)):
         if len(parsed_rows) == 0:
             return {"valid": False, "message": "В файле нет записей"}
 
-        if parsed_rows[0].endInterval > date_diff or parsed_rows[-1].endInterval < date_diff:
-                return {"valid": False, "message": f"Выбранная дата разделения некорректна. Должны быть записи как больше, так и меньше выбвранной даты"}
+    if parsed_rows[0].endInterval > date_diff or parsed_rows[-1].endInterval < date_diff:
+            return {"valid": False, "message": f"Выбранная дата разделения некорректна. Должны быть записи как больше, так и меньше выбранной даты"}
 
         index = 0
 
