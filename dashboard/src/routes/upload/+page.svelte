@@ -174,6 +174,14 @@
 			icon="ph:align-top-fill"
 		/>
 		<Badge
+			title="Среднее число событий в день"
+			value={stats.avg_events_per_day}
+			class="!text-[20px]"
+			measure=""
+			label=""
+			icon="ph:align-top-fill"
+		/>
+		<Badge
 			title="Всего отправлено"
 			value={stats.sum_messages_sent}
 			class="!text-[20px]"
