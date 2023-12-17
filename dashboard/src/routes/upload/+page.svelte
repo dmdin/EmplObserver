@@ -175,7 +175,7 @@
 		/>
 		<Badge
 			title="Среднее число событий в день"
-			value={stats.avg_events_per_day}
+			value={round(stats.avg_events_per_day, 2)}
 			class="!text-[20px]"
 			measure=""
 			label=""
