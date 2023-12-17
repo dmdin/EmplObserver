@@ -6,8 +6,22 @@ import csv
 from model import UserStatisticItem
 from ml_model import predict
 import bisect
+import os
+
+load_dotenv()
+
+origins = os.getenv('ORIGINS')
 
 app = FastAPI()
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 required_columns = [
     "sendMessagesCount",
