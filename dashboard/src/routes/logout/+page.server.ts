@@ -1,7 +1,6 @@
-import { error, redirect } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import {error, redirect} from '@sveltejs/kit'
 
-export const GET: RequestHandler = async ({ locals, cookies }) => {
+export async function load({locals, cookies}) {
   const { error: err } = await locals.sb.auth.signOut();
   console.log(1)
   if (err) {
@@ -9,4 +8,5 @@ export const GET: RequestHandler = async ({ locals, cookies }) => {
   }
   cookies.delete('email')
   throw redirect(303, '/');
-};
+
+}
