@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import Icon from '@iconify/svelte';
-	
-  import Badge from '$lib/ui/Badge.svelte';
-  import {round} from '$lib/client'
 
+	import Badge from '$lib/ui/Badge.svelte';
+	import Percent from '$lib/ui/Percent.svelte';
+	import { round } from '$lib/client';
 
 	const PUBLIC_API = 'http://178.170.196.177:8000';
 
@@ -12,7 +12,7 @@
 
 	let min_date, max_date, valid, message, stats;
 
-  let result = 0;
+	let result = 0;
 
 	async function uploadFile(attachment: FileList) {
 		if (!attachment) return;
@@ -35,14 +35,14 @@
 	}
 
 	async function getData(date) {
-    const attachment = files
+		const attachment = files;
 		if (!attachment || !date) return;
 
 		const form = new FormData();
 		const [file] = attachment;
 
 		form.append('file', file);
-    form.append('date_diff', date);
+		form.append('date_diff', date);
 
 		({ valid, message, result } = await fetch(`${PUBLIC_API}/upload`, {
 			body: form,
@@ -59,7 +59,7 @@
 	let date;
 
 	$: uploadFile(files);
-  $: getData(date)
+	$: getData(date);
 </script>
 
 <div class="w-full flex items-center justify-between mb-5">
@@ -128,12 +128,6 @@
 </div>
 
 <div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
-  <h1 class="font-bold text-3xl ">Вероятность увольнения:</h1>
-  <h2 
-    class="text-7xl font-black" 
-    class:text-primary={0.55 > result} 
-    class:text-warning={0.55 < result && result < 0.75} 
-    class:text-error={0.75 > result}>
-    {round(100 * result, 1)}%
-  </h2>
+	<h1 class="font-bold text-3xl">Вероятность увольнения:</h1>
+	<Percent class="text-7xl font-black" value={result} />
 </div>
