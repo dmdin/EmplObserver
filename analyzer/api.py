@@ -66,76 +66,85 @@ def calc_stats(parsed_rows):
 
 @app.post("/get_dates")
 async def get_dates(file: UploadFile = File(...)):
-    if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
-        return {"valid": False, "message": "Неверный тип файла. Ожидается CSV."}
-    contents = await file.read()
-    csv_file = io.StringIO(contents.decode('utf-8'))
-    reader = csv.reader(csv_file,  delimiter=';')
-    headers = next(reader) 
-
-    missed_columns = [x for x in required_columns if x not in headers]
-
-    if len(missed_columns) > 0:
-        return {"valid": False, "message": f"В файле не хватает следующих колонок: {','.join(missed_columns)}"}
-    
-    parsed_rows = []
     try:
-        parsed_rows = parse_rows(reader)
-    except Exception as ex:
-        return {"valid": False, "message": str(ex)}
-    
-    parsed_rows = sorted(parsed_rows, key=lambda row: row.endInterval)
+        if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+            return {"valid": False, "message": "Неверный тип файла. Ожидается CSV."}
+        contents = await file.read()
+        csv_file = io.StringIO(contents.decode('utf-8'))
+        reader = csv.reader(csv_file,  delimiter=';')
+        headers = next(reader) 
 
-    return{
-        "valid": True, 
-        "message":"", 
-        "min_date":min(parsed_rows, key=lambda x: x.endInterval).endInterval, 
-        "max_date": max(parsed_rows, key=lambda x: x.endInterval).endInterval,
-        "stats": calc_stats(parsed_rows)}
+        missed_columns = [x for x in required_columns if x not in headers]
+
+        if len(missed_columns) > 0:
+            return {"valid": False, "message": f"В файле не хватает следующих колонок: {','.join(missed_columns)}"}
+        
+        parsed_rows = []
+        try:
+            parsed_rows = parse_rows(reader)
+        except Exception as ex:
+            return {"valid": False, "message": str(ex)}
+        
+        parsed_rows = sorted(parsed_rows, key=lambda row: row.endInterval)
+
+        return{
+            "valid": True, 
+            "message":"", 
+            "min_date":min(parsed_rows, key=lambda x: x.endInterval).endInterval, 
+            "max_date": max(parsed_rows, key=lambda x: x.endInterval).endInterval,
+            "stats": calc_stats(parsed_rows)}
+    except Exception as ex:
+        print(ex)
+        return {"valid": False, "message": f"Переданный файл невалиден"}
+
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...), date_diff: date= Form(...)):
-    print(file.content_type)
-    if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
-        return {"valid": False, "message": "Неверный тип файла. Ожидается CSV."}
-    
-    contents = await file.read()
-
-    csv_file = io.StringIO(contents.decode('utf-8'))
-
-    reader = csv.reader(csv_file,  delimiter=';')
-    headers = next(reader) 
-
-    missed_columns = [x for x in required_columns if x not in headers]
-
-    if len(missed_columns) > 0:
-        return {"valid": False, "message": f"В файле не хватает следующих колонок: {','.join(missed_columns)}"}
-    
-    parsed_rows = []
     try:
-        parsed_rows = parse_rows(reader)
-    except Exception as ex:
-        return {"valid": False, "message": str(ex)}
+        if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+            return {"valid": False, "message": "Неверный тип файла. Ожидается CSV."}
     
-    parsed_rows = sorted(parsed_rows, key=lambda row: row.endInterval)
+        contents = await file.read()
 
-    if len(parsed_rows) == 0:
-        return {"valid": False, "message": "В файле нет записей"}
+        csv_file = io.StringIO(contents.decode('utf-8'))
 
-    if parsed_rows[0].endInterval > date_diff or parsed_rows[-1].endInterval < date_diff:
-            return {"valid": False, "message": f"Выбранная дата разделения некорректна. Должны быть записи как больше, так и меньше выбвранной даты"}
+        reader = csv.reader(csv_file,  delimiter=';')
+        headers = next(reader) 
 
-    index = 0
+        missed_columns = [x for x in required_columns if x not in headers]
 
-    for idx, row in enumerate(parsed_rows):
-        if row.endInterval > date_diff:
-            index = idx
-            break
+        if len(missed_columns) > 0:
+            return {"valid": False, "message": f"В файле не хватает следующих колонок: {','.join(missed_columns)}"}
+        
+        parsed_rows = []
+        try:
+            parsed_rows = parse_rows(reader)
+        except Exception as ex:
+            return {"valid": False, "message": str(ex)}
+        
+        parsed_rows = sorted(parsed_rows, key=lambda row: row.endInterval)
 
-    left = parsed_rows[:index]
-    right = parsed_rows[index:]
+        if len(parsed_rows) == 0:
+            return {"valid": False, "message": "В файле нет записей"}
 
-    return {"valid": True, "message": "", "result": predict(left, right)}
+        if parsed_rows[0].endInterval > date_diff or parsed_rows[-1].endInterval < date_diff:
+                return {"valid": False, "message": f"Выбранная дата разделения некорректна. Должны быть записи как больше, так и меньше выбвранной даты"}
+
+        index = 0
+
+        for idx, row in enumerate(parsed_rows):
+            if row.endInterval > date_diff:
+                index = idx
+                break
+
+        left = parsed_rows[:index]
+        right = parsed_rows[index:]
+
+        return {"valid": True, "message": "", "result": predict(left, right)}
+    except Exception as ex:
+        print(ex)
+        return {"valid": False, "message": f"Переданный файл невалиден"}
+        
 
 def parse_rows(reader):
     rows = []
