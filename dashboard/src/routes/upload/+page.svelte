@@ -124,7 +124,7 @@
 
 <!-- {/if} -->
 {#if stats}
-	<div class="w-full flex justify-between">
+	<div class="w-full flex justify-between flex-wrap">
 		<Badge
 			title="Отправлено вообщений"
 			value={round(stats.avg_messages_sended_per_week, 2)}
