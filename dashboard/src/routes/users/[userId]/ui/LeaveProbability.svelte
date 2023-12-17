@@ -25,7 +25,7 @@
 		var i = 0;
 
 		for (const event of events) {
-			time.push(JSON.stringify(start_date.get('date')));
+			time.push(start_date.format("DD/MM"));
 			start_date = start_date.add(1, 'day');
 			values.push({
 				value: event.dismissalProbability,
