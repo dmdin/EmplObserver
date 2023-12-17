@@ -8,5 +8,4 @@ export async function load({locals, cookies}) {
   }
   cookies.delete('email')
   throw redirect(303, '/');
-
 }

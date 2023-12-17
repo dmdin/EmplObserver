@@ -8,6 +8,12 @@ export const handle: Handle = async ({ event, resolve }) => {
   event.locals.sb = supabaseClient;
   event.locals.session = session;
   event.locals.email = event.cookies.get("email")
+  event.locals.getSession = async () => {
+    const {
+      data: { session },
+    } = await event.locals.sb.auth.getSession()
+    return session
+  }
 
   return resolve(event);
 };
