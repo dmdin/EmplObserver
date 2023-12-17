@@ -1,10 +1,18 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
+	import Icon from '@iconify/svelte';
+
+	import Badge from '$lib/ui/Badge.svelte';
+	import Percent from '$lib/ui/Percent.svelte';
+	import { round } from '$lib/client';
+
 	const PUBLIC_API = 'http://178.170.196.177:8000';
 
 	let files: FileList;
 
-	let min_date, max_date, valid, message;
+	let min_date, max_date, valid, message, stats;
+
+	let result = 0;
 
 	async function uploadFile(attachment: FileList) {
 		if (!attachment) return;
@@ -12,10 +20,9 @@
 		const form = new FormData();
 		const [file] = attachment;
 
-		console.log(file);
 		form.append('file', file);
 
-		({ valid, message, min_date, max_date } = await fetch(`${PUBLIC_API}/get_dates`, {
+		({ valid, message, min_date, max_date, stats } = await fetch(`${PUBLIC_API}/get_dates`, {
 			body: form,
 			headers: {},
 			method: 'POST'
@@ -27,12 +34,66 @@
 		}, 3000);
 	}
 
+	async function getData(date) {
+		const attachment = files;
+		if (!attachment || !date) return;
+
+		const form = new FormData();
+		const [file] = attachment;
+
+		form.append('file', file);
+		form.append('date_diff', date);
+
+		({ valid, message, result } = await fetch(`${PUBLIC_API}/upload`, {
+			body: form,
+			headers: {},
+			method: 'POST'
+		}).then((r) => r.json()));
+
+		console.log(valid, message, result);
+		setTimeout(() => {
+			message = '';
+		}, 3000);
+	}
+
 	let date;
 
-	$: console.log(date);
-
 	$: uploadFile(files);
+	$: getData(date);
 </script>
+
+<div class="w-full flex items-center justify-between mb-5">
+	<div class="flex item-center justify-center text-2xl gap-7">
+		<h2 class="font-black whitespace-nowrap">Дашборд c ручной выгрузкой</h2>
+		<!-- <span class="text-sm flex items-center text-content3 truncate"
+      >{$manager?.departmentName}</span
+    > -->
+	</div>
+	<div class="flex w-fit gap-7 bg-backgroundSecondary shadow-md px-2 py-1 rounded-md">
+		<label class="flex gap-2 items-center justify-center">
+			<Icon class="text-primary" icon="mdi:file-outline" width="24" />
+			<input accept="text/csv" bind:files id="csv" name="csv" type="file" class="input-file" />
+		</label>
+
+		<!-- {#if min_date && max_date} -->
+		<!-- <input type="date" id="start" name="trip-start" value="2018-07-22" min={min_date} max={max_date} /> -->
+		<label class="flex gap-2 justify-between items-center">
+			<Icon class="text-primary" icon="mdi:calendar" width="24" />
+			{#key min_date && max_date}
+				<input
+					type="date"
+					id="start"
+					name="trip-start"
+					disabled={!(min_date && max_date)}
+					bind:value={date}
+					min={min_date}
+					max={max_date}
+					class="input"
+				/>
+			{/key}
+		</label>
+	</div>
+</div>
 
 {#if message}
 	<div class="w-full px-6 top-5 left-0 absolute">
@@ -58,26 +119,15 @@
 	</div>
 {/if}
 
-<div class="flex w-fit gap-7 bg-backgroundSecondary shadow-md p-4 rounded-md">
-	<label class="flex flex-col gap-2"
-		>CSV Выгрузка
-		<input accept="text/csv" bind:files id="csv" name="csv" type="file" class="input-file" />
-	</label>
-
-	<!-- {#if min_date && max_date} -->
-	<!-- <input type="date" id="start" name="trip-start" value="2018-07-22" min={min_date} max={max_date} /> -->
-	<label class="flex flex-col gap-2">
-		Дата прогноза
-		<input
-			type="date"
-			id="start"
-			name="trip-start"
-			bind:value={date}
-			min="2018-01-01"
-			max="2018-12-31"
-			class="input"
-		/>
-	</label>
-</div>
 <!-- {/if} -->
-<div></div>
+<div class="w-full flex justify-between items-center">
+	<Badge />
+	<Badge />
+	<Badge />
+	<Badge />
+</div>
+
+<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
+	<h1 class="font-bold text-3xl">Вероятность увольнения:</h1>
+	<Percent class="text-7xl font-black" value={result} />
+</div>
