@@ -28,7 +28,7 @@ def send_week_stats(manager_email):
             folder=account.sent,
             subject=subject,
             body=body,
-            to_recipients=['komlevdanila742@gmail.com']
+            to_recipients=[manager_email]
         )
             
         with open("temp.csv", 'rb') as f:
