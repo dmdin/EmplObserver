@@ -49,9 +49,9 @@ export class User {
   }
 
   @rpc()
-  async getAllbyDiap(user_id: number, timeInterval: TimeInterval) {
+  async getForUserByDiap(user_id: number, timeInterval: TimeInterval) {
     let manager = await this.getManagerByEmail(await this.getUserEmail());
-    const startDate: Date = this.getStartDateInterval(timeInterval);
+    // const startDate: Date = this.getStartDateInterval(timeInterval);
 
     if(manager == undefined){
       return []

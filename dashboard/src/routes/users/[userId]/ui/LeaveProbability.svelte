@@ -6,6 +6,7 @@
 	import { rpc, colors,  } from '$lib/client';
 	import type { TimeInterval } from '$lib/enums';
 	import { period } from '../controller';
+	import { number } from 'echarts';
 
 	const userId = Number($page.params.userId);
 
@@ -13,28 +14,35 @@
 
 	async function update(period: TimeInterval, $colors) {
 		loading = true;
-		const events = await rpc.EventTimeInterval.getForUser(userId, period);
+		const events = (await rpc.User.getForUserByDiap(userId, period));
+		console.log(events)
 
 		const time = [];
 		const values = [];
+		const millisecondsInDay = 24 * 60 * 60 * 1000;
+		var start_date = dayjs();
+		start_date = start_date.subtract(Math.max(events.length-1, 0), 'day');
+		
+		var i = 0;
 
 		for (const event of events) {
-			time.push(dayjs(event.intervalEnd).format('HH:mm-DD/MM'));
+			time.push(JSON.stringify(start_date.get('date')));
+			start_date = start_date.add(1, 'day');
 			values.push({
-				value: event.count,
+				value: event.dismissalProbability,
 				itemStyle: {
 					borderRadius: [20, 20, 20, 20],
-					color: $colors.p // Change the color here
+					color: $colors.p, // Change the color here
 				}
 			});
 		}
-
+		console.log(values.length, time.length)
 		loading = false;
 		return {
 			// color: [$colors?.p],
 
 			title: {
-				text: 'Распределение активности',
+				text: '	Вероятность увольнения сотрудника',
 				textStyle:{
 					color: $colors?.c1
 				}
@@ -65,7 +73,8 @@
 				type: 'category'
 			},
 			yAxis: {
-				type: 'value'
+				type: 'value',
+				max: 1
 			},
 			grid: {
 				left: '12%',
@@ -75,7 +84,6 @@
 
 				// borderColor: hsl2css(vars?.b2),
 			},
-
 			series: [
 				{
 					data: values,
@@ -84,7 +92,7 @@
 					backgroundStyle: {
 						borderRadius: [20, 20, 20, 20],
 						color: $colors.s
-					}
+					},
 				}
 			]
 		};
