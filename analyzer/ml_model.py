@@ -92,21 +92,25 @@ def gen_worker_df(hw, c, max_range):
 
 # Model utils
 class LSTMClassifier(nn.Module):
-    """Implementation of LSTM-based time-series classifier."""
+    """Very simple implementation of LSTM-based time-series classifier."""
     
     def __init__(self, input_dim, hidden_dim, layer_dim, output_dim):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.layer_dim = layer_dim
-        self.rnn = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, output_dim)
+        self.rnn_1 = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True)
+        self.rnn_2 = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first=True)
+        self.fc = nn.Linear(hidden_dim*2, output_dim)
         self.batch_size = None
         self.hidden = None
     
-    def forward(self, x):
-        h0, c0 = self.init_hidden(x)
-        out, (hn, cn) = self.rnn(x, (h0, c0))
-        out = torch.sigmoid(self.fc(out[:, -1, :]))
+    def forward(self, x1, x2):
+        h0, c0 = self.init_hidden(x1)
+        out1, (hn, cn) = self.rnn_1(x1, (h0, c0))
+        h0, c0 = self.init_hidden(x2)
+        out2, (hn, cn) = self.rnn_2(x2, (h0, c0))
+        out = torch.cat([out1[:, -1, :], out2[:, -1, :]], axis=1)
+        out = torch.sigmoid(self.fc(out))
         return out
     
     def init_hidden(self, x):
@@ -128,12 +132,12 @@ def scale_by_max(worker, max_range):
     return scaled_worker
     
 
-def predict_by_max(model, scaled_worker, type_up):
+def predict_by_max(model, scaled_worker_interval_1, scaled_worker_interval_2, type_up):
     proba = 0
     for k in type_up:
-        x = torch.tensor(scaled_worker[k]).unsqueeze(0).unsqueeze(2).float()
-        print(x.shape)
-        pred = model(x).item()
+        x1 = torch.tensor(scaled_worker_interval_1[k]).unsqueeze(0).unsqueeze(2).float()
+        x2 = torch.tensor(scaled_worker_interval_2[k]).unsqueeze(0).unsqueeze(2).float()
+        pred = model(x1, x2).item()
         if not type_up[k]:
             pred = 1 - pred
         proba += pred
@@ -150,8 +154,8 @@ def to_worker_format(form):
     return pd.DataFrame(res)
 
     
-def predict(worker):
-    model_path = "lstm_v1.11.pth"
+def predict(worker_interval_1, worker_interval_2):
+    model_path = "lstm_siam_v2.pth"
     
     input_dim = 1    
     hidden_dim = 256
@@ -192,7 +196,8 @@ def predict(worker):
     
     
     # Делаем предскзазание
-    scaled_worker = scale_by_max(to_worker_format(worker), max_range)
+    scaled_worker_interval_1 = scale_by_max(to_worker_format(worker_interval_1), max_range)
+    scaled_worker_interval_2 = scale_by_max(to_worker_format(worker_interval_2), max_range)
     
-    return predict_by_max(model, scaled_worker, type_up)
+    return predict_by_max(model, scaled_worker_interval_1, scaled_worker_interval_2, type_up)
     

@@ -1,10 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, Form
 import uvicorn
-from datetime import date
+from datetime import date, datetime
 import io
 import csv
 from model import UserStatisticItem
-#from ml_model import predict
+from ml_model import predict
+import bisect
 
 app = FastAPI()
 
@@ -48,8 +49,26 @@ async def upload_file(file: UploadFile = File(...), date_diff: date= Form(...)):
         parsed_rows = parse_rows(reader)
     except Exception as ex:
         return {"valid": False, "message": str(ex)}
+    
+    parsed_rows = sorted(parsed_rows, key=lambda row: row.endInterval)
 
-    return {"valid": True, "message": "", "result": predict(parsed_rows)}
+    if len(parsed_rows) == 0:
+        return {"valid": False, "message": "В файле нет записей"}
+
+    if parsed_rows[0].endInterval > date_diff or parsed_rows[-1].endInterval < date_diff:
+            return {"valid": False, "message": f"Выбранная дата разделения некорректна. Должны быть записи как больше, так и меньше выбвранной даты"}
+
+    index = 0
+
+    for idx, row in enumerate(parsed_rows):
+        if row.endInterval > date_diff:
+            index = idx
+            break
+
+    left = parsed_rows[:index]
+    right = parsed_rows[index:]
+
+    return {"valid": True, "message": "", "result": predict(left, right)}
 
 def parse_rows(reader):
     rows = []
@@ -62,15 +81,18 @@ def parse_rows(reader):
             recipient_counts=int(r[2]),
             bcc_count=int(r[3]),
             cc_count=int(r[4]), 
-            days_between_received_and_read= int(r[5]),
-            replied_messages_count=int(r[6]),
-            sent_characters_count=int(r[7]),
-            messages_outside_working_hours=int(r[8]),
-            received_to_sent_ratio=float(r[9]),
-            bytesReceivedToSentRatio=float(r[10]),
-            messages_with_question_and_no_reply=int(r[11]),
-            read_messages_later_than=int(r[12]),
-            count_events=int(r[13]))
+            replied_messages_count=int(r[5]),
+            sent_characters_count=int(r[6]),
+            days_between_received_and_read = 0,
+            messages_outside_working_hours=int(r[7]),
+            received_to_sent_ratio=float(r[8]),
+            bytesReceivedToSentRatio=float(r[9]),
+            messages_with_question_and_no_reply=int(r[10]),
+            read_messages_later_than=int(r[11]),
+            count_events=int(r[12]),
+            endInterval=datetime.strptime(r[14], '%Y-%m-%d').date()
+            )
+
         
             rows.append(row)
         except Exception as ex:
