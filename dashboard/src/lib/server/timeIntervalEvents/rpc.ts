@@ -17,6 +17,17 @@ export class EventTimeInterval {
     
   }
 
+  @rpc()
+  async getUserStatistics(user_id: number, timeInterval: TimeInterval) {
+
+    const startDate: Date = this.getStartDateInterval(timeInterval);
+
+    return await db.select()
+        .from(timeIntervalEvents)
+        .where(and(eq(timeIntervalEvents.user, user_id), gt(timeIntervalEvents.intervalStart, String(startDate))))
+        .orderBy(timeIntervalEvents.intervalStart)
+  }
+
   getStartDateInterval(timeInterval: TimeInterval): Date {
     let daysToSubtract: number = 0
     switch (timeInterval) {
