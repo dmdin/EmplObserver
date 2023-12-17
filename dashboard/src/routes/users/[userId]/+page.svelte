@@ -11,7 +11,7 @@
 
 	import Bar from './ui/WorkActivity.svelte';
 	import Donut from './ui/donut.svelte';
-	import Badge from './ui/Badge.svelte';
+	import Badge from '$lib/ui/Badge.svelte';
 	import LeaveBar from './ui/LeaveProbability.svelte';
 
 
