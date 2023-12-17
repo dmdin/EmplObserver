@@ -8,7 +8,7 @@
   export let icon = 'mdi:clock'
 </script>
 
-<div class="bg-backgroundSecondary px-3 py-4 rounded-md shadow-md flex flex-col justify-between">
+<div class="bg-backgroundSecondary px-3 py-4 rounded-md shadow-md flex flex-col justify-between my-2">
   <div class="flex justify-between gap-4">
     <span class="font-bold" >{title}</span>
     <Icon {icon} class="text-primary" width="20"/>

@@ -1,7 +1,7 @@
 
 
-export async function load({locals}) {
+export async function load({locals: {getSession}}) {
   return {
-    session: locals.session
+    session: await getSession()
   }
 }
