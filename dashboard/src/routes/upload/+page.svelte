@@ -5,7 +5,7 @@
 	import Percent from '$lib/ui/Percent.svelte';
 	import { round } from '$lib/client';
 
-	const PUBLIC_API = 'http://178.170.196.177:8000';
+	const PUBLIC_API = 'https://api.misis1.ru';
 
 	let files: FileList;
 
