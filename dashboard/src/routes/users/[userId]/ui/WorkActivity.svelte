@@ -13,7 +13,8 @@
 
 	async function update(period: TimeInterval, $colors) {
 		loading = true;
-		const events = await rpc.EventTimeInterval.getForUser(userId, period);
+		const events = (await rpc.User.getAllbyDiap(userId, period));
+		
 
 		const time = [];
 		const values = [];
@@ -21,7 +22,7 @@
 		for (const event of events) {
 			time.push(dayjs(event.intervalEnd).format('HH:mm-DD/MM'));
 			values.push({
-				value: event.count,
+				value: event.dismissalProbability,
 				itemStyle: {
 					borderRadius: [20, 20, 20, 20],
 					color: $colors.p // Change the color here

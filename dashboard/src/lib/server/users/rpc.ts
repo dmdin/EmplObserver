@@ -1,10 +1,12 @@
 import {rpc, depends} from '@chord-ts/rpc'
 import {db} from '../db' 
 import {updateUserModel, userUpdateMessage, users} from './model'
-import { eq, or, sql } from 'drizzle-orm'
+import { and, eq, or, sql, gt } from 'drizzle-orm'
 import { userStatistic } from '../userStatistics/model'
 import { managers } from '../managers/model'
 import { integer } from 'drizzle-orm/pg-core'
+import { TimeInterval } from '$lib/enums'
+import {timeIntervalEvents} from './model'
 
 export class User {
   @depends()
@@ -45,6 +47,50 @@ export class User {
 
     
   }
+
+  @rpc()
+  async getAllbyDiap(user_id: number, timeInterval: TimeInterval) {
+    let manager = await this.getManagerByEmail(await this.getUserEmail());
+    const startDate: Date = this.getStartDateInterval(timeInterval);
+
+    if(manager == undefined){
+      return []
+    }
+    else{
+      return db.select({
+        userId: users.id,
+        domainName: users.domainName,
+        domainEmail: users.domainEmail,
+        dismissalProbability: sql<number>`avg(${userStatistic.dismissalProbability})`
+      }).from(users)
+      .leftJoin(userStatistic, eq(users.id, userStatistic.user))
+      .where(eq(users.managerId, manager.id))
+      .groupBy(users.id)
+  }
+}
+
+getStartDateInterval(timeInterval: TimeInterval): Date {
+  let daysToSubtract: number = 0
+  switch (timeInterval) {
+      case TimeInterval.Day:
+        daysToSubtract = 1;
+        break;
+      case TimeInterval.Week:
+        daysToSubtract = 7;
+          break;
+      case TimeInterval.Month:
+        daysToSubtract = 30;
+          break;
+      case TimeInterval.Year:
+        daysToSubtract = 365;
+          break;
+  }
+
+  const date = new Date();
+
+  date.setDate(date.getDate() - daysToSubtract);
+  return date;
+}
 
   @rpc()
   async create(user: updateUserModel){

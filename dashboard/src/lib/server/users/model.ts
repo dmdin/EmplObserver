@@ -1,4 +1,4 @@
-import { varchar, serial, pgTable, integer } from "drizzle-orm/pg-core";
+import { varchar, serial, pgTable, integer, time } from "drizzle-orm/pg-core";
 
 export const users = pgTable('user', {
   id: serial('id').primaryKey(),
@@ -20,3 +20,11 @@ export class userUpdateMessage{
   success: boolean | undefined
   message: string | undefined
 }
+
+export const timeIntervalEvents = pgTable('timeintervalevent', {
+  id: serial('id').primaryKey(),
+  count: integer('count'),
+  intervalStart: time('intervalStart'),
+  intervalEnd: time('intervalEnd'),
+  user: integer('user_id').references(() => users.id, {onDelete: 'cascade'}).notNull()
+});
