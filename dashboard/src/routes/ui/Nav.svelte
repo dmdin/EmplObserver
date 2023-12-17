@@ -7,6 +7,8 @@
 
 	onMount(async () => {
 		$theme = 'light';
+
+		collapse = false;
 	});
 
 	let collapse = false;
@@ -65,6 +67,18 @@
 				<span class="font-bold" transition:scale={{ delay: 100 }}>
 					Дашборд <br />
 					сотрудника
+				</span>
+			{/if}
+		</a>
+		<a
+		class:bg-secondary={$page.url.href.endsWith('upload')}
+		class="rounded-xl flex items-center gap-4 transition hover:text-primary"
+			href="/upload"
+			><Icon icon="material-symbols:upload" width="24" />
+			{#if !collapse}
+				<span class="font-bold" transition:scale={{ delay: 100 }}>
+					Ручная <br />
+					Выгрузка
 				</span>
 			{/if}
 		</a>

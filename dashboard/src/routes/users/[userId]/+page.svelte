@@ -12,6 +12,8 @@
 	import Bar from './ui/WorkActivity.svelte';
 	import Donut from './ui/donut.svelte';
 	import Badge from './ui/Badge.svelte';
+	import LeaveBar from './ui/LeaveProbability.svelte';
+
 
 	function getUser(userId: string, users: Users) {
 		return $users.find((u) => u.userId === Number(userId));
@@ -93,9 +95,9 @@
 		/>
 	</div>
 	<div class="w-full flex mt-3 items-center justify-between gap-4 [608px]">
-		<div class="flex flex-col w-4/6 gap-4">
+		<div class="flex flex-col w-5/6 gap-4">
 			<Bar class="w-full" />
-			<Bar class="w-full" />
+			<LeaveBar class="w-full" />
 		</div>
 		<Donut class="h-[608px] w-full" />
 	</div>
