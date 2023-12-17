@@ -6,8 +6,22 @@ import csv
 from model import UserStatisticItem
 from ml_model import predict
 import bisect
+import os
+
+load_dotenv()
+
+origins = os.getenv('ORIGINS')
 
 app = FastAPI()
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 required_columns = [
     "sendMessagesCount",
@@ -26,10 +40,38 @@ required_columns = [
     "endInterval"
 ]
 
+@app.post("/get_dates")
+async def get_dates(file: UploadFile = File(...)):
+    if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+        return {"valid": False, "message": "Неверный тип файла. Ожидается CSV."}
+    contents = await file.read()
+    csv_file = io.StringIO(contents.decode('utf-8'))
+    reader = csv.reader(csv_file,  delimiter=';')
+    headers = next(reader) 
+
+    missed_columns = [x for x in required_columns if x not in headers]
+
+    if len(missed_columns) > 0:
+        return {"valid": False, "message": f"В файле не хватает следующих колонок: {','.join(missed_columns)}"}
+    
+    parsed_rows = []
+    try:
+        parsed_rows = parse_rows(reader)
+    except Exception as ex:
+        return {"valid": False, "message": str(ex)}
+    
+    parsed_rows = sorted(parsed_rows, key=lambda row: row.endInterval)
+
+    return{
+        "valid": True, 
+        "message":"", 
+        "min_date":min(parsed_rows, key=lambda x: x.endInterval).endInterval, 
+        "max_date": max(parsed_rows, key=lambda x: x.endInterval).endInterval}
+
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...), date_diff: date= Form(...)):
     print(file.content_type)
-    if file.content_type != "text/csv":
+    if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
         return {"valid": False, "message": "Неверный тип файла. Ожидается CSV."}
     
     contents = await file.read()
