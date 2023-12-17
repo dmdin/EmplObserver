@@ -68,6 +68,18 @@
 				</span>
 			{/if}
 		</a>
+		<a
+		class:bg-secondary={$page.url.href.endsWith('upload')}
+		class="rounded-xl flex items-center gap-4 transition hover:text-primary"
+			href="/upload"
+			><Icon icon="material-symbols:upload" width="24" />
+			{#if !collapse}
+				<span class="font-bold" transition:scale={{ delay: 100 }}>
+					Ручная <br />
+					Выгрузка
+				</span>
+			{/if}
+		</a>
 	</div>
 
 	<div class="w-full flex flex-col gap-[60px]">
