@@ -65,11 +65,13 @@
 <div class="w-full flex items-center justify-between mb-5">
 	<div class="flex item-center justify-center text-2xl gap-7">
 		<h2 class="font-black whitespace-nowrap">Дашборд c ручной выгрузкой</h2>
+
 		<!-- <span class="text-sm flex items-center text-content3 truncate"
       >{$manager?.departmentName}</span
     > -->
 	</div>
 	<div class="flex w-fit gap-7 bg-backgroundSecondary shadow-md px-2 py-1 rounded-md">
+		<span> Выберите файл со статистикой и дату для разбиения на два временных интервала </span>
 		<label class="flex gap-2 items-center justify-center">
 			<Icon class="text-primary" icon="mdi:file-outline" width="24" />
 			<input accept="text/csv" bind:files id="csv" name="csv" type="file" class="input-file" />
