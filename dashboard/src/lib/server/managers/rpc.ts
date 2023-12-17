@@ -10,7 +10,7 @@ export class Managers {
 
   @rpc()
   async getManagerInfo() {
-    let email: string = this.ctx?.session?.user?.email ?? "komlevdanila742@gmail.com";
+    let email: string = this.ctx?.session?.user?.email ?? "";
 
     let manager = await db.select()
         .from(managers)

@@ -88,13 +88,13 @@
 			{/if}
 		</button>
 
-		<a class="flex items-center gap-4 w-full transition hover:text-primary" href="/users"
+		<!-- <a class="flex items-center gap-4 w-full transition hover:text-primary" href="/users"
 			><Icon icon="material-symbols:settings" width="24" />
 			{#if !collapse}
 				<span class="font-bold" transition:scale={{ delay: 100 }}> Настройки </span>
 			{/if}
-		</a>
-		<a class="flex items-center gap-4 w-full transition text-error" href="mdi:user"
+		</a> -->
+		<a class="flex items-center gap-4 w-full transition text-error" href="/logout"
 			><Icon icon="iconamoon:exit-fill" width="24" />
 
 			{#if !collapse}

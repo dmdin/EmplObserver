@@ -138,6 +138,7 @@ def predict_by_max(model, scaled_worker_interval_1, scaled_worker_interval_2, ty
         x1 = torch.tensor(scaled_worker_interval_1[k]).unsqueeze(0).unsqueeze(2).float()
         x2 = torch.tensor(scaled_worker_interval_2[k]).unsqueeze(0).unsqueeze(2).float()
         pred = model(x1, x2).item()
+        print(pred)
         if not type_up[k]:
             pred = 1 - pred
         proba += pred
@@ -178,7 +179,8 @@ def predict(worker_interval_1, worker_interval_2):
                 "replied_messages_count": 10, 
                 "sent_characters_count": 5400, 
                 "messages_outside_working_hours": 10, 
-                "messages_with_question_and_no_reply": 5}
+                "messages_with_question_and_no_reply": 5,
+                "count_events": 25000}
     
     # 0 - увеличение статистики ведет к увольнению, 1 - наоборот 
     type_up = {"sent_messages_count": 1,
@@ -192,6 +194,7 @@ def predict(worker_interval_1, worker_interval_2):
                 "sent_characters_count": 1, 
                 "messages_outside_working_hours": 0, 
                 #"received_to_sent_ratio": 1, 
+                "count_events": 1,
                 "messages_with_question_and_no_reply": 0}
     
     

@@ -26,6 +26,7 @@ required_columns = [
     "endInterval"
 ]
 
+
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...), date_diff: date= Form(...)):
     print(file.content_type)
@@ -104,4 +105,4 @@ def parse_rows(reader):
 
 
 def run_fastapi():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8002)
