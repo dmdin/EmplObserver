@@ -58,6 +58,7 @@
 
 	let date;
 
+
 	$: uploadFile(files);
 	$: getData(date);
 </script>
@@ -69,6 +70,11 @@
       >{$manager?.departmentName}</span
     > -->
 	</div>
+
+	<button type="button" class="btn variant-filled-surface mx-5" style="border:revert">
+		<a data-svelte-h="svelte-1458np4" id="download-link" href="https://misis1.ru/docs/example.csv" target="_blank" rel="noopener" download="example.csv">Пример</a>
+	</button>
+
 	<div class="flex w-fit gap-7 bg-backgroundSecondary shadow-md px-2 py-1 rounded-md">
 		<label class="flex gap-2 items-center justify-center">
 			<Icon class="text-primary" icon="mdi:file-outline" width="24" />
@@ -121,6 +127,7 @@
 
 <!-- {/if} -->
 <div class="w-full flex justify-between items-center">
+	
 	<Badge />
 	<Badge />
 	<Badge />

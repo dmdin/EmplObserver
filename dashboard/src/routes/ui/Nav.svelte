@@ -8,10 +8,10 @@
 	onMount(async () => {
 		$theme = 'light';
 
-		collapse = false;
+		collapse = true;
 	});
 
-	let collapse = false;
+	let collapse = true;
 </script>
 
 <nav
