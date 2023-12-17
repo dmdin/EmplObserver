@@ -17,6 +17,7 @@ class UserStatisticItem:
     messages_with_question_and_no_reply: int
     read_messages_later_than: int
     count_events: int
+    startInterval: date
     endInterval: date
 
     def dict(self):
