@@ -52,6 +52,7 @@ def calc_stats(parsed_rows):
     total_messages_received = sum([x.received_messages_count for x in parsed_rows])
     total_messages_replied = sum([x.replied_messages_count for x in parsed_rows])
     total_messages_messages_outside_working_hours = sum([x.messages_outside_working_hours for x in parsed_rows])
+    total_events_count = sum([x.count_events for x in parsed_rows])
 
     total_weeks = (end - start).days // 7
 
@@ -60,7 +61,8 @@ def calc_stats(parsed_rows):
         "avg_messages_sended_per_week": (total_messages_sent*1.0)/total_weeks,
         "sum_messages_sent": total_messages_sent,
         "sum_messages_sent_outside_working_hours": total_messages_messages_outside_working_hours,
-        "percent_replied_messages": (total_messages_replied*100.0)/total_messages_received
+        "percent_replied_messages": (total_messages_replied*100.0)/total_messages_received,
+        "avg_events_per_day": 1.0 *total_events_count /(end - start).days
     }
 
 

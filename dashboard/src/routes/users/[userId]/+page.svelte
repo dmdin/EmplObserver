@@ -79,7 +79,7 @@
 			icon="ph:align-top-fill"
 		/>
 		<Badge
-			title="Поздно прочитанные письма"
+			title="Поздно прочитанные письма (в среднем за неделю)"
 			value={round(user.readMessagesMoreThan4Hours, 2)}
 			measure="шт."
 			icon="tabler:activity"
