@@ -19,7 +19,6 @@
 
 		const time = [];
 		const values = [];
-		const millisecondsInDay = 24 * 60 * 60 * 1000;
 		var start_date = dayjs();
 		start_date = start_date.subtract(Math.max(events.length-1, 0), 'day');
 		
