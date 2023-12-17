@@ -104,4 +104,4 @@ def parse_rows(reader):
 
 
 def run_fastapi():
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
