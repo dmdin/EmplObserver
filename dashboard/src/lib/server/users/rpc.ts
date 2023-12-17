@@ -69,6 +69,23 @@ export class User {
   }
 }
 
+@rpc()
+  async getForUserStats(user_id: number, timeInterval: TimeInterval) {
+    
+    const startDate: Date = this.getStartDateInterval(timeInterval);
+
+    return db.select({
+      userId: users.id,
+      domainName: users.domainName,
+      domainEmail: users.domainEmail,
+      dismissalProbability: userStatistic.dismissalProbability
+    }).from(userStatistic)
+    .leftJoin(users, eq(users.id, user_id))
+    .where(and(eq(user_id, users.id), gt(userStatistic.startInterval, String(startDate))))
+  }
+
+
+
 getStartDateInterval(timeInterval: TimeInterval): Date {
   let daysToSubtract: number = 0
   switch (timeInterval) {

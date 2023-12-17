@@ -3,7 +3,7 @@
 	import dayjs from 'dayjs';
 	import { Chart, type EChartsOptions } from 'svelte-echarts';
 	import { page } from '$app/stores';
-	import { rpc, colors,  } from '$lib/client';
+	import { rpc, colors } from '$lib/client';
 	import type { TimeInterval } from '$lib/enums';
 	import { period } from '../controller';
 	import { number } from 'echarts';
@@ -14,35 +14,35 @@
 
 	async function update(period: TimeInterval, $colors) {
 		loading = true;
-		const events = (await rpc.User.getForUserByDiap(userId, period));
-		console.log(events)
+		const events = await rpc.User.getForUserStats(userId, period);
+		console.log(events);
 
 		const time = [];
 		const values = [];
 		var start_date = dayjs();
-		start_date = start_date.subtract(Math.max(events.length-1, 0), 'day');
-		
+		start_date = start_date.subtract(Math.max(events.length - 1, 0), 'day');
+
 		var i = 0;
 
 		for (const event of events) {
-			time.push(start_date.format("DD/MM"));
+			time.push(start_date.format('DD/MM'));
 			start_date = start_date.add(1, 'day');
 			values.push({
 				value: event.dismissalProbability,
 				itemStyle: {
 					borderRadius: [20, 20, 20, 20],
-					color: $colors.p, // Change the color here
+					color: $colors.p // Change the color here
 				}
 			});
 		}
-		console.log(values.length, time.length)
+		console.log(values.length, time.length);
 		loading = false;
 		return {
 			// color: [$colors?.p],
 
 			title: {
 				text: '	Вероятность увольнения сотрудника',
-				textStyle:{
+				textStyle: {
 					color: $colors?.c1
 				}
 			},
@@ -91,7 +91,7 @@
 					backgroundStyle: {
 						borderRadius: [20, 20, 20, 20],
 						color: $colors.s
-					},
+					}
 				}
 			]
 		};
