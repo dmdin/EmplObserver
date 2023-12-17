@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from datetime import date
 
 @dataclass()
 class UserStatisticItem:
@@ -16,6 +17,7 @@ class UserStatisticItem:
     messages_with_question_and_no_reply: int
     read_messages_later_than: int
     count_events: int
+    endInterval: date
 
     def dict(self):
         return {k: v for k, v in asdict(self).items()}
