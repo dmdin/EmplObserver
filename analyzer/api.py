@@ -1,4 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
+
 import uvicorn
 from datetime import date, datetime
 import io
@@ -7,6 +9,8 @@ from model import UserStatisticItem
 from ml_model import predict
 import bisect
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
