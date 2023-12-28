@@ -26,12 +26,12 @@ export class User {
         domainName: users.domainName,
         domainEmail: users.domainEmail,
         sendMessagesCount: sql<number>`avg(${userStatistic.sendMessagesCount})`,
-        receivedMessagesCount:  sql<number>`avg(${userStatistic.receivedMessagesCount})`,
+        receivedMessagesCount:  sql<number>`sum(${userStatistic.receivedMessagesCount})`,
         recipientCounts: sql<number>`avg(${userStatistic.recipientCounts})`,
         bccCount: sql<number>`avg(${userStatistic.bccCount})`,
         ccCount: sql<number>`avg(${userStatistic.ccCount})`,
         daysBetweenReceivedAndRead: sql<number>`avg(${userStatistic.daysBetweenReceivedAndRead})`,
-        repliedMessagesCount: sql<number>`avg(${userStatistic.repliedMessagesCount})`,
+        repliedMessagesCount: sql<number>`sum(${userStatistic.repliedMessagesCount})`,
         sentCharactersCount: sql<number>`avg(${userStatistic.sentCharactersCount})`,
         messagesOutsideWorkingHours: sql<number>`avg(${userStatistic.messagesOutsideWorkingHours})`,
         receivedToSentRatio: sql<number>`avg(${userStatistic.receivedToSentRatio})`,
@@ -68,6 +68,23 @@ export class User {
       .groupBy(users.id)
   }
 }
+
+@rpc()
+  async getForUserStats(user_id: number, timeInterval: TimeInterval) {
+    
+    const startDate: Date = this.getStartDateInterval(timeInterval);
+
+    return db.select({
+      userId: users.id,
+      domainName: users.domainName,
+      domainEmail: users.domainEmail,
+      dismissalProbability: userStatistic.dismissalProbability
+    }).from(userStatistic)
+    .leftJoin(users, eq(userStatistic.user, user_id))
+    .where(and(eq(user_id, users.id), gt(userStatistic.startInterval, String(startDate))))
+  }
+
+
 
 getStartDateInterval(timeInterval: TimeInterval): Date {
   let daysToSubtract: number = 0

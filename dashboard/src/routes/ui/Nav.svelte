@@ -8,10 +8,10 @@
 	onMount(async () => {
 		$theme = 'light';
 
-		collapse = false;
+		collapse = true;
 	});
 
-	let collapse = false;
+	let collapse = true;
 </script>
 
 <nav
@@ -37,10 +37,10 @@
 		{#if !collapse}
 			<div transition:scale={{ delay: 100 }}>
 				<span class="font-bold">
-					{$manager?.lastName}
+					{$manager?.lastName ?? 'Тестовый пользователь'}
 				</span><br />
 				<span>
-					{$manager?.firstName}
+					{$manager?.firstName ?? ''}
 				</span>
 			</div>
 		{/if}
@@ -71,8 +71,8 @@
 			{/if}
 		</a>
 		<a
-		class:bg-secondary={$page.url.href.endsWith('upload')}
-		class="rounded-xl flex items-center gap-4 transition hover:text-primary"
+			class:bg-secondary={$page.url.href.endsWith('upload')}
+			class="rounded-xl flex items-center gap-4 transition hover:text-primary"
 			href="/upload"
 			><Icon icon="material-symbols:upload" width="24" />
 			{#if !collapse}

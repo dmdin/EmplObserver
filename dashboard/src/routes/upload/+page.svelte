@@ -5,7 +5,7 @@
 	import Percent from '$lib/ui/Percent.svelte';
 	import { round } from '$lib/client';
 
-	const PUBLIC_API = 'http://178.170.196.177:8000';
+	const PUBLIC_API = 'https://api.misis1.ru';
 
 	let files: FileList;
 
@@ -27,6 +27,8 @@
 			method: 'POST'
 		}).then((r) => r.json()));
 
+		result = 0;
+		date = undefined;
 		console.log(valid, message, min_date, max_date);
 		console.log(stats);
 		setTimeout(() => {
@@ -58,6 +60,7 @@
 
 	let date;
 
+
 	$: uploadFile(files);
 	$: getData(date);
 </script>
@@ -66,11 +69,23 @@
 	<h1 class="font-black whitespace-nowrap">Дашборд c ручной выгрузкой</h1>
 </div>
 <div class="w-full flex items-center justify-between mb-5">
+	<p>
+		Здесь вы можете загрузить файл с активностью сотрудника, разбить его на два интервала, которые <br
+		/>
+		хотите сравнить и получить вероятность его увольнения, а также полезные статистики по файлу.
+	</p>
+</div>
+<div class="w-full flex items-center justify-between mb-5">
 	<div class="flex item-center justify-center text-2xl gap-7">
 		<!-- <span class="text-sm flex items-center text-content3 truncate"
       >{$manager?.departmentName}</span
     > -->
 	</div>
+
+	<button type="button" class="btn variant-filled-surface mx-5" style="border:revert">
+		<a data-svelte-h="svelte-1458np4" id="download-link" href="https://misis1.ru/docs/example.csv" target="_blank" rel="noopener" download="example.csv">Пример</a>
+	</button>
+
 	<div class="flex w-fit gap-7 bg-backgroundSecondary shadow-md px-2 py-1 rounded-md">
 		<span> Выберите файл со статистикой и дату для разбиения на два временных интервала </span>
 		<label class="flex gap-2 items-center justify-center">
@@ -121,7 +136,16 @@
 		</div>
 	</div>
 {/if}
-
+{#if result}
+	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
+		<h1 class="font-bold text-3xl">Вероятность увольнения:</h1>
+		<Percent class="text-7xl font-black" value={result} />
+	</div>
+{:else if stats}
+	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
+		<h4 class="font-bold text-3xl">Выберите дату разбиения на интервалы, чтобы получить прогноз</h4>
+	</div>
+{/if}
 <!-- {/if} -->
 {#if stats}
 	<div class="w-full flex justify-between flex-wrap">
@@ -143,10 +167,18 @@
 		/>
 		<Badge
 			title="Получено сообщений"
-			value="{round(stats.avg_messages_received_per_week, 2)}%"
+			value={round(stats.avg_messages_received_per_week, 2)}
 			class="!text-[20px]"
 			measure=""
 			label="(в среднем за неделю)"
+			icon="ph:align-top-fill"
+		/>
+		<Badge
+			title="Среднее число событий в день"
+			value={round(stats.avg_events_per_day, 2)}
+			class="!text-[20px]"
+			measure=""
+			label=""
 			icon="ph:align-top-fill"
 		/>
 		<Badge
@@ -165,16 +197,5 @@
 			label="сообщений во внерабочее время"
 			icon="ph:align-top-fill"
 		/>
-	</div>
-{/if}
-
-{#if result}
-	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
-		<h1 class="font-bold text-3xl">Вероятность увольнения:</h1>
-		<Percent class="text-7xl font-black" value={result} />
-	</div>
-{:else if stats}
-	<div class="w-1/2 mt-5 flex justify-between p-4 bg-backgroundSecondary shadow-md">
-		<h1 class="font-bold text-3xl">Выберите дату разбиения на интервалы</h1>
 	</div>
 {/if}
